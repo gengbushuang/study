@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com</groupId>
+		<artifactId>study</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>com</groupId>
+	<artifactId>machine-learning-algorithm</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>machine-learning-algorithm</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+		<!-- 科学计算包 -->
+		<!-- <dependency> <groupId>org.nd4j</groupId> <artifactId>nd4j-native-platform</artifactId> 
+			<version>0.4.0</version> </dependency> -->
+		<dependency>
+			<groupId>org.nd4j</groupId>
+			<artifactId>nd4j-native</artifactId>
+			<version>0.9.1</version>
+			<!-- <classifier>linux-x86_64-avx2</classifier> -->
+			<!-- <classifier>macosx-x86_64-avx2</classifier> -->
+			<!-- <classifier>windows-x86_64-avx2</classifier> -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
+		</dependency>
+	</dependencies>
+</project>
