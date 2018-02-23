@@ -1,6 +1,10 @@
 package org.raft.common.db;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,9 +13,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.raft.common.message.LogEntry;
+import org.raft.common.util.BinaryUtils;
 
 public class H2LogStore {
 	// 表名
@@ -28,6 +36,8 @@ public class H2LogStore {
 	private static final String UPDATE_SEQUENCE_SQL = "ALTER SEQUENCE LogSequence RESTART WITH ? INCREMENT BY 1";
 	// 删除大于当前ID的数据
 	private static final String TRIM_TABLE_SQL = "DELETE FROM LogStore WHERE id > ?";
+	// 删除小于等于ID的数据
+	private static final String COMPACT_TABLE_SQL = "DELETE FROM LogStore WHERE id <= ?";
 	// 获取ID范围的集合日志
 	private static final String SELECT_RANGE_SQL = "SELECT * FROM LogStore WHERE id >= ? AND id < ?";
 	// 查询某个ID日志
@@ -42,7 +52,10 @@ public class H2LogStore {
 
 	private Connection connection;
 
+	private Logger logger;
+
 	public H2LogStore(String path) {
+		this.logger = LogManager.getLogger(getClass());
 		this.startIndex = new AtomicLong();
 		this.nextIndex = new AtomicLong();
 
@@ -216,8 +229,135 @@ public class H2LogStore {
 			ByteArrayOutputStream memoryStream = new ByteArrayOutputStream();
 			GZIPOutputStream gzipStream = new GZIPOutputStream(memoryStream);
 			PreparedStatement ps = this.connection.prepareStatement(SELECT_RANGE_SQL);
+			ps.setLong(1, index);
+			ps.setLong(2, index + itemsToPack);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				byte[] value = rs.getBytes(4);
+				int size = Long.BYTES + Integer.BYTES + value.length;
+				ByteBuffer buffer = ByteBuffer.allocate(size);
+				buffer.putInt(size);
+				buffer.putLong(rs.getLong(2));
+				buffer.put(value);
+				gzipStream.write(buffer.array());
+			}
+			rs.close();
+			gzipStream.flush();
+			memoryStream.flush();
+			gzipStream.close();
+			return memoryStream.toByteArray();
 		} catch (Exception error) {
 			throw new RuntimeException("log store error", error);
+		}
+	}
+
+	public void applyLogPack(long index, byte[] logPack) {
+		if (index < this.startIndex.get()) {
+			throw new IllegalArgumentException("index out of range");
+		}
+		try {
+			ByteArrayInputStream memoryStream = new ByteArrayInputStream(logPack);
+			GZIPInputStream gzipStream = new GZIPInputStream(memoryStream);
+			byte[] sizeBuffer = new byte[Integer.BYTES];
+			// 删除大于当前ID的数据
+			PreparedStatement ps = this.connection.prepareStatement(TRIM_TABLE_SQL);
+			ps.setLong(1, index - 1);
+			ps.execute();
+
+			ps = this.connection.prepareStatement(UPDATE_SEQUENCE_SQL);
+			ps.setLong(1, index);
+			ps.execute();
+			// 循环读取压缩数据
+
+			while (this.read(gzipStream, sizeBuffer)) {
+				int size = BinaryUtils.bytesToInt(sizeBuffer, 0);
+				byte[] entryData = new byte[size - Integer.BYTES];
+				if (!this.read(gzipStream, entryData)) {
+					throw new RuntimeException("bad log pack, no able to read the log entry data");
+				}
+				ByteBuffer buffer = ByteBuffer.wrap(entryData);
+				long term = buffer.getLong();
+				byte[] value = new byte[size - Long.BYTES - Integer.BYTES];
+				buffer.get(value);
+				ps = this.connection.prepareStatement(INSERT_ENTRY_SQL);
+				ps.setLong(1, term);
+				ps.setByte(2, (byte) 0);
+				ps.setBytes(3, value);
+				ps.execute();
+				this.lastEntry = new LogEntry(term, value);
+			}
+
+			this.connection.commit();
+			gzipStream.close();
+		} catch (Exception error) {
+			throw new RuntimeException("log store error", error);
+		}
+	}
+
+	public boolean compact(long lastLogIndex) {
+		if (lastLogIndex < this.startIndex.get()) {
+			throw new IllegalArgumentException("index out of range");
+		}
+
+		try {
+			// 删除小于等于lastLogIndex数据
+			PreparedStatement ps = this.connection.prepareStatement(COMPACT_TABLE_SQL);
+			ps.setLong(1, lastLogIndex);
+			ps.execute();
+			// 如果下一个ID值小于等于lastLogIndex，更新序列索引ID为lastLogIndex＋1
+			if (this.nextIndex.get() - 1 <= lastLogIndex) {
+				ps = this.connection.prepareStatement(UPDATE_SEQUENCE_SQL);
+				ps.setLong(1, lastLogIndex + 1);
+				ps.execute();
+			}
+			this.connection.commit();
+			this.startIndex.set(lastLogIndex + 1);
+			if (this.nextIndex.get() - 1 <= lastLogIndex) {
+				this.nextIndex.set(lastLogIndex + 1);
+			}
+
+			ResultSet rs = this.connection.createStatement().executeQuery("SELECT TOP 1 * FROM LogStore ORDER BY id DESC");
+
+			if (rs.next()) {
+				this.lastEntry = new LogEntry(rs.getLong(2), rs.getBytes(4));
+			} else {
+				this.lastEntry = new LogEntry(0, null);
+			}
+
+			rs.close();
+			return true;
+		} catch (Exception error) {
+			throw new RuntimeException("log store error", error);
+		}
+	}
+
+	private boolean read(InputStream stream, byte[] buffer) {
+		try {
+			int offset = 0;
+			int bytesRead = 0;
+			while (offset < buffer.length && (bytesRead = stream.read(buffer, offset, buffer.length - offset)) != -1) {
+				offset += bytesRead;
+			}
+
+			if (offset == 0 && bytesRead == -1) {
+				return false;
+			}
+			if (offset < buffer.length) {
+				throw new RuntimeException("bad stream, insufficient file data for reading");
+			}
+			return true;
+		} catch (IOException exception) {
+			throw new RuntimeException(exception.getMessage(), exception);
+		}
+	}
+
+	public void close() {
+		if (this.connection != null) {
+			try {
+				this.connection.close();
+			} catch (SQLException e) {
+				this.logger.error("failed to close the connection", e);
+			}
 		}
 	}
 }
