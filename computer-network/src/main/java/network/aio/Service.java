@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiConsumer;
 
+import network.message.MessageHandler;
+import network.message.RequestMessage;
+import network.message.ResponseMessage;
+import network.rdt.model.Packet;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import net.data.technology.jraft.extensions.AsyncUtility;
-import network.message.MessageHandler;
 
 public class Service {
 	// 保存一些连接
@@ -73,29 +75,75 @@ public class Service {
 	}
 
 	private void readRequest(AsynchronousSocketChannel socketchannel, MessageHandler messageHandler) {
-		ByteBuffer buffer = ByteBuffer.allocate(10);
-		
-		AsyncUtility.readFromChannel(socketchannel, buffer, messageHandler,handlerFrom((Integer bytesRead,final MessageHandler message)->{
-			if(bytesRead.intValue()){
-				logger.info("failed to read the request header from client socket");
-				closeSocket(socketchannel);
-			}else{
-				
-			}
-			
-		}, socketchannel));
-	}
-	
-	 private <V, A> CompletionHandler<V, A> handlerFrom(BiConsumer<V, A> completed, AsynchronousSocketChannel connection) {
-	        return AsyncUtility.handlerFrom(completed, (Throwable error, A attachment) -> {
-	                        this.logger.info("socket server failure", error);
-	                        if(connection != null){
-	                            closeSocket(connection);
-	                        }
-	                    });
-	    }
+		ByteBuffer buffer = ByteBuffer.allocate(BinaryUtils.REQUEST_HEAD_SIZE);
+		try {
+			AsyncUtility.readFromChannel(socketchannel, buffer, messageHandler, handlerFrom((Integer bytesRead, final MessageHandler message) -> {
+				if (bytesRead.intValue() < BinaryUtils.REQUEST_HEAD_SIZE) {
+					logger.info("failed to read the request header from client socket");
+					closeSocket(socketchannel);
+				} else {
+					RequestMessage byteToRequest = BinaryUtils.byteToRequest(buffer.array());
+					if (byteToRequest.getLength() > 0) {
+						ByteBuffer packBuf = ByteBuffer.allocate(byteToRequest.getLength());
 
-	//关闭
+						AsyncUtility.readFromChannel(socketchannel, packBuf, null, handlerFrom((Integer size, Object attachment) -> {
+							if (size.intValue() < byteToRequest.getLength()) {
+								logger.info("failed to read the request header from client socket");
+								closeSocket(socketchannel);
+							} else {
+								try {
+									Packet byteToPacket = BinaryUtils.byteToPacket(packBuf.array());
+									byteToRequest.setPacket(byteToPacket);
+									processRequest(socketchannel, byteToRequest, message);
+								} catch (Throwable error) {
+									logger.info("log entries parsing error", error);
+									closeSocket(socketchannel);
+								}
+							}
+						}, socketchannel));
+					} else {
+						processRequest(socketchannel, byteToRequest, messageHandler);
+					}
+				}
+
+			}, socketchannel));
+		} catch (Exception readError) {
+			logger.info("failed to read more request from client socket", readError);
+			closeSocket(socketchannel);
+		}
+	}
+
+	private void processRequest(AsynchronousSocketChannel socketchannel, RequestMessage requestMessage, MessageHandler messageHandler) {
+		try {
+			ResponseMessage processRequest = messageHandler.processRequest(requestMessage);
+			final ByteBuffer wrap = ByteBuffer.wrap(BinaryUtils.responseToByte(processRequest));
+			AsyncUtility.writeToChannel(socketchannel, wrap, null, handlerFrom((Integer byteWrite, Object o) -> {
+				if (byteWrite.intValue() < wrap.limit()) {
+					logger.info("failed to completely send the response.");
+					closeSocket(socketchannel);
+				} else {
+					if (socketchannel.isOpen()) {
+						logger.debug("try to read next request");
+						readRequest(socketchannel, messageHandler);
+					}
+				}
+			}, socketchannel));
+		} catch (Throwable error) {
+			closeSocket(socketchannel);
+			logger.error("failed to process the request or send the response", error);
+		}
+	}
+
+	private <V, A> CompletionHandler<V, A> handlerFrom(BiConsumer<V, A> completed, AsynchronousSocketChannel connection) {
+		return AsyncUtility.handlerFrom(completed, (Throwable error, A attachment) -> {
+			this.logger.info("socket server failure", error);
+			if (connection != null) {
+				closeSocket(connection);
+			}
+		});
+	}
+
+	// 关闭
 	private void closeSocket(AsynchronousSocketChannel connection) {
 		try {
 			this.connections.remove(connection);
