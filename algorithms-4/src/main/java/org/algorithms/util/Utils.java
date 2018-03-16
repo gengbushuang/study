@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,11 @@ public class Utils {
 		return file;
 	}
 
+	public static Scanner getScanner(String fileName) throws FileNotFoundException {
+		File file = readFilename(fileName);
+		return new Scanner(new FileInputStream(file), "UTF-8");
+	}
+	
 	public static <R> List<R> readAllStrings(String fileName, Function<String, R> function) {
 		File file = readFilename(fileName);
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));) {
