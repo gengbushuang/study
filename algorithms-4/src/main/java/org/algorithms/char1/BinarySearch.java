@@ -24,16 +24,25 @@ public class BinarySearch {
 	}
 
 	public static void main(String[] args) {
-		int[] a = Utils.readAllInts("largeW.txt");
-		Arrays.sort(a);
-		int[] readAllInts = Utils.readAllInts("largeT.txt");
 		long n1 = System.currentTimeMillis();
+		int[] a = Utils.readAllInts("largeW.txt");
+		System.out.println("largew文件"+(a.length)+"条加载"+(System.currentTimeMillis()-n1)+"毫秒");
+		n1 = System.currentTimeMillis();
+		
+		Arrays.sort(a);
+		System.out.println("largew排序"+(System.currentTimeMillis()-n1)+"毫秒");
+		n1 = System.currentTimeMillis();
+		
+		int[] readAllInts = Utils.readAllInts("largeT.txt");
+		System.out.println("largeT文件"+(readAllInts.length)+"条加载"+(System.currentTimeMillis()-n1)+"毫秒");
+		n1 = System.currentTimeMillis();
+		
 		for (int key : readAllInts) {
 			if (rank(key, a) < 0) {
-				System.out.println(key);
+				//System.out.println(key);
 			}
 		}
-		System.out.println(System.currentTimeMillis()-n1+"秒");
+		System.out.println(System.currentTimeMillis()-n1+"毫秒");
 
 	}
 }
