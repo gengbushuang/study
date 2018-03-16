@@ -56,7 +56,8 @@ public class LinkedStack<T> implements Iterable<T> {
 	
 	public static void main(String[] args) {
 		LinkedStack<String> stack = new LinkedStack<>();
-		String itemStr = "to be or not to - be - - that - - - is";
+		//was times of best was the it
+		String itemStr = "it was - the best of times - - - it was - the - -";
 		String[] items = itemStr.split(" ");
 		for (String item : items) {
 			if (!item.equals("-")) {
