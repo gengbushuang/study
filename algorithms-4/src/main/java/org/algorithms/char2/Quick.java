@@ -1,5 +1,9 @@
 package org.algorithms.char2;
-
+/**
+ * 快速排序
+ * @author gbs
+ *
+ */
 public class Quick extends Example {
 
 	public static void sort(Comparable[] a) {
