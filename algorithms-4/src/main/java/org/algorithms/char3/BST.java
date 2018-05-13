@@ -1,5 +1,9 @@
 package org.algorithms.char3;
 
+import java.util.Arrays;
+
+import org.algorithms.util.Utils;
+
 /**
  * 二叉树
  * 
@@ -168,6 +172,70 @@ public class BST<Key extends Comparable<Key>, Value> {
 			return x;
 		}
 		return t;
+	}
+
+	public void deleteMin() {
+		root = deleteMin(root);
+	}
+
+	private Node deleteMin(Node x) {
+		if (x.left == null) {
+			return x.right;
+		}
+		x.left = deleteMin(x.left);
+		x.n = size(x.left) + size(x.right) + 1;
+		return x;
+	}
+
+	public void delete(Key key) {
+		root = delete(root, key);
+	}
+
+	private Node delete(Node x, Key key) {
+		if (x == null) {
+			return null;
+		}
+		int result = key.compareTo(x.key);
+		if (result < 0) {
+			x.left = delete(x.left, key);
+		} else if (result > 0) {
+			x.right = delete(x.right, key);
+		} else {
+			if (x.right == null) {
+				return x.left;
+			}
+			if (x.left == null) {
+				return x.right;
+			}
+			Node t = x;
+			x = min(t.right);
+			x.left = t.left;
+			x.right = deleteMin(t.right);
+
+		}
+		x.n = size(x.left) + size(x.right) + 1;
+		return x;
+	}
+	
+	public void print(){
+		print(root);
+	}
+	
+	private void print(Node x){
+		if(x==null)return;
+		print(x.left);
+		System.out.print(x.key+" ");
+		print(x.right);
+	}
+	
+	public static void main(String[] args) {
+		BST<String, Integer> bst = new BST<String, Integer>();
+		String[] allStrings = Utils.readAllStrings("tinyST.txt");
+		System.out.println(Arrays.toString(allStrings));
+		for(int i = 0;i<allStrings.length;i++){
+			bst.put(allStrings[i], i);
+		}
+		bst.print();
 	}
 
 }
