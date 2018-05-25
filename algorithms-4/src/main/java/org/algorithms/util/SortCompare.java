@@ -5,10 +5,10 @@ import java.util.Random;
 
 import org.algorithms.char2.Insertion;
 import org.algorithms.char2.Merage;
+import org.algorithms.char2.Quick;
 import org.algorithms.char2.Selection;
+import org.algorithms.char2.Shell;
 
-import edu.princeton.cs.algs4.Quick;
-import edu.princeton.cs.algs4.Shell;
 
 public class SortCompare {
 
