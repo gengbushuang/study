@@ -30,7 +30,7 @@ public class Queue<T> implements Iterable<T> {
 
 	public void enqueue(T t) {
 		if (n == ts.length) {
-
+			resize(n);
 		}
 		ts[last] = t;
 		last++;
@@ -38,6 +38,14 @@ public class Queue<T> implements Iterable<T> {
 		if (last == ts.length) {
 			last = 0;
 		}
+	}
+
+	private void resize(int max) {
+		Object[] obs = new Object[max];
+		for (int i = 0; i < n; i++) {
+			obs[i] = ts[i];
+		}
+		this.ts = obs;
 	}
 
 	public T dequeue() {
