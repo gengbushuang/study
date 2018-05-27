@@ -5,7 +5,11 @@ import java.util.Scanner;
 
 import org.algorithms.char1.Stack;
 import org.algorithms.util.Utils;
-
+/**
+ * 深度优先搜索
+ * @author gbs
+ *
+ */
 public class DepthFirstPaths {
 	public boolean[] marked;
 	private int[] engeTo;// 从一个起点到一个顶点已知路径上的最后一个路径
@@ -19,7 +23,7 @@ public class DepthFirstPaths {
 
 		dfs(g, s);
 	}
-
+	
 	private void dfs(Graph g, int v) {
 		marked[v] = true;
 		for (int w : g.adj(v)) {
@@ -62,7 +66,7 @@ public class DepthFirstPaths {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		int s = 0;
+		int s = 2;
 		DepthFirstPaths search = new DepthFirstPaths(graph, s);
 		for (int i = 0; i < graph.v(); i++) {
 			System.out.print(s + " to " + i + ": ");

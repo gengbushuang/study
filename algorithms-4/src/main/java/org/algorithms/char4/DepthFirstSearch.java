@@ -6,9 +6,8 @@ import java.util.Scanner;
 import org.algorithms.util.Utils;
 
 /**
- * 利用深度搜索
- * 
- * @author gengbushuang
+ * 深度优先搜索
+ * @author gbs
  *
  */
 public class DepthFirstSearch {
@@ -57,7 +56,7 @@ public class DepthFirstSearch {
 			e.printStackTrace();
 		}
 		
-		DepthFirstSearch search = new DepthFirstSearch(graph, 7);
+		DepthFirstSearch search = new DepthFirstSearch(graph, 0);
 		
 		for(int i = 0;i<graph.v();i++) {
 			if(search.marked(i)) {
