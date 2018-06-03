@@ -60,7 +60,7 @@ public class BreadthFirstPaths {
 	public static void main(String[] args) {
 		Graph graph = null;
 		try {
-			Scanner scanner = Utils.getScanner("tinyCG.txt");
+			Scanner scanner = Utils.getScanner("graph/tinyCG.txt");
 			graph = new Graph(scanner.nextInt());
 			int e = scanner.nextInt();
 			for (int i = 0; i < e; i++) {
