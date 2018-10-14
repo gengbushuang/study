@@ -1,6 +1,7 @@
 package org.algorithms.char1;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * 先进先出(FIFO)队列
@@ -30,7 +31,7 @@ public class Queue<T> implements Iterable<T> {
 
 	public void enqueue(T t) {
 		if (n == ts.length) {
-
+			resize(n * 2);
 		}
 		ts[last] = t;
 		last++;
@@ -38,6 +39,16 @@ public class Queue<T> implements Iterable<T> {
 		if (last == ts.length) {
 			last = 0;
 		}
+	}
+
+	private void resize(int max) {
+		Object[] obs = new Object[max];
+		for (int i = 0; i < n; i++) {
+			obs[i] = ts[i];
+		}
+		this.ts = obs;
+		first = 0;
+		last = n;
 	}
 
 	public T dequeue() {
@@ -61,8 +72,27 @@ public class Queue<T> implements Iterable<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayIterator();
+	}
+
+	private class ArrayIterator implements Iterator<T> {
+		private int i = 0;
+
+		public boolean hasNext() {
+			return i < n;
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+
+		public T next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			T item = (T) ts[(i + first) % ts.length];
+			i++;
+			return item;
+		}
 	}
 
 }

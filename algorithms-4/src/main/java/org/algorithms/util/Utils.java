@@ -49,5 +49,10 @@ public class Utils {
 		List<Integer> list = readAllStrings(fileName, x -> Integer.parseInt(x.trim()));
 		return list.stream().mapToInt(x -> x).toArray();
 	}
+	
+	public static String[] readAllStrings(String fileName){
+		List<String> list = readAllStrings(fileName,x->x.trim());
+		return list.stream().toArray(String[]::new);
+	}
 
 }
