@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class Utils {
 
-	static Path path = Paths.get("data");
+	static Path path = Paths.get("algorithms-4/data");
 
 	public static File readFilename(String fileName) {
 		Path resolve = path.resolve(fileName);
@@ -54,5 +54,4 @@ public class Utils {
 		List<String> list = readAllStrings(fileName,x->x.trim());
 		return list.stream().toArray(String[]::new);
 	}
-
 }
