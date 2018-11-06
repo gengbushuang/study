@@ -8,10 +8,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FilteringData {
 
@@ -31,11 +28,52 @@ public class FilteringData {
         String key1 = "Hailey";
         String key2 = "Jordyn";
 
-        float manhattan = manhattan(key1, key2, stringMap);
-        System.out.println("(" + key1 + "," + key2 + ")曼哈顿距离->" + manhattan);
-        float euclidean = euclidean(key1, key2, stringMap);
-        System.out.println("(" + key1 + "," + key2 + ")欧式距离->" + euclidean);
+//        float manhattan = manhattan(key1, key2, stringMap);
+//        System.out.println("(" + key1 + "," + key2 + ")曼哈顿距离->" + manhattan);
+//        float euclidean = euclidean(key1, key2, stringMap);
+//        System.out.println("(" + key1 + "," + key2 + ")欧式距离->" + euclidean);
+//
+//        float minkowsk = minkowsk(key1, key2, stringMap, 2);
+//        System.out.println("(" + key1 + "," + key2 + ")明氏距离->" + minkowsk);
+        recommend(key1, stringMap);
+
         return null;
+    }
+
+
+    public void recommend(String username, Map<String, String[]> stringMap){
+
+        List<TwoTuple<String, Float>> twoTuples = computeNearestNeighbor(username, stringMap);
+        System.out.println(twoTuples);
+        String first = twoTuples.get(0).first;
+        System.out.println(first);
+    }
+
+    public List<TwoTuple<String, Float>> computeNearestNeighbor(String username, Map<String, String[]> stringMap) {
+        Set<String> usernames = stringMap.keySet();
+        List<TwoTuple<String, Float>> twoTuples = new ArrayList<>(stringMap.size());
+        for (String user : usernames) {
+            if (user.equals(username)) {
+                continue;
+            }
+            float manhattan = manhattan(username, user, stringMap);
+            twoTuples.add(new TwoTuple<>(user, new Float(manhattan)));
+        }
+
+        twoTuples.sort(new Comparator<TwoTuple<String, Float>>() {
+            @Override
+            public int compare(TwoTuple<String, Float> o1, TwoTuple<String, Float> o2) {
+                float v = o1.second - o2.second;
+                if (v < 0) {
+                    return -1;
+                } else if (v > 0) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+
+        return twoTuples;
     }
 
     public float manhattan(String use1, String use2, Map<String, String[]> stringMap) {
@@ -62,6 +100,20 @@ public class FilteringData {
             sum += Math.pow(Float.parseFloat(strings1[i]) - Float.parseFloat(strings2[i]), 2);
         }
         return (float) Math.sqrt(sum);
+    }
+
+    public float minkowsk(String use1, String use2, Map<String, String[]> stringMap, int r) {
+        String[] strings1 = stringMap.get(use1);
+        String[] strings2 = stringMap.get(use2);
+        float sum = 0.0f;
+        for (int i = 0; i < strings1.length; i++) {
+            if (StringUtils.isBlank(strings1[i]) || StringUtils.isBlank(strings2[i])) {
+                continue;
+            }
+            float abs = Math.abs(Float.parseFloat(strings1[i]) - Float.parseFloat(strings2[i]));
+            sum += Math.pow(abs, r);
+        }
+        return (float) Math.pow(sum, 1.0 / r);
     }
 
     public static void main(String[] args) throws IOException, URISyntaxException {
