@@ -12,6 +12,8 @@ import java.util.*;
 
 public class FilteringData {
 
+    String[] labels = {"Blues Traveler", "Broken Bells", "Deadmau5", "Norah Jones", "Phoenix", "Slightly Stoopid", "The Strokes", "Vampire Weekend"};
+
 
     public INDArray load(String path) throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(path));
@@ -25,7 +27,7 @@ public class FilteringData {
 //            }
         }
 
-        String key1 = "Hailey";
+        String key1 = "Angelica";
         String key2 = "Jordyn";
 
 //        float manhattan = manhattan(key1, key2, stringMap);
@@ -41,12 +43,38 @@ public class FilteringData {
     }
 
 
-    public void recommend(String username, Map<String, String[]> stringMap){
+    public void recommend(String username, Map<String, String[]> stringMap) {
 
         List<TwoTuple<String, Float>> twoTuples = computeNearestNeighbor(username, stringMap);
         System.out.println(twoTuples);
-        String first = twoTuples.get(0).first;
-        System.out.println(first);
+        String nearest = twoTuples.get(0).first;
+        System.out.println(nearest);
+        String[] usernames = stringMap.get(username);
+        String[] nearests = stringMap.get(nearest);
+
+        List<TwoTuple<String, Float>> recommendations = new ArrayList<>();
+        for (int i = 0; i < usernames.length; i++) {
+            //查找不在
+            if (StringUtils.isBlank(usernames[i]) && StringUtils.isNotBlank(nearests[i])) {
+                recommendations.add(new TwoTuple<>(labels[i], Float.parseFloat(nearests[i])));
+                continue;
+            }
+        }
+
+        recommendations.sort(new Comparator<TwoTuple<String, Float>>() {
+            @Override
+            public int compare(TwoTuple<String, Float> o1, TwoTuple<String, Float> o2) {
+                float v = o2.second - o1.second;
+                if (v < 0) {
+                    return -1;
+                } else if (v > 0) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+
+        System.out.println(recommendations);
     }
 
     public List<TwoTuple<String, Float>> computeNearestNeighbor(String username, Map<String, String[]> stringMap) {
@@ -76,6 +104,13 @@ public class FilteringData {
         return twoTuples;
     }
 
+    /**
+     *
+     * @param use1
+     * @param use2
+     * @param stringMap
+     * @return
+     */
     public float manhattan(String use1, String use2, Map<String, String[]> stringMap) {
         String[] strings1 = stringMap.get(use1);
         String[] strings2 = stringMap.get(use2);
@@ -89,6 +124,13 @@ public class FilteringData {
         return sum;
     }
 
+    /**
+     * 欧几里得距离
+     * @param use1
+     * @param use2
+     * @param stringMap
+     * @return
+     */
     public float euclidean(String use1, String use2, Map<String, String[]> stringMap) {
         String[] strings1 = stringMap.get(use1);
         String[] strings2 = stringMap.get(use2);
