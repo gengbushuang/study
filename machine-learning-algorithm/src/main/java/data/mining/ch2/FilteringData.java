@@ -28,8 +28,11 @@ public class FilteringData {
         }
 
         String key1 = "Angelica";
-        String key2 = "Jordyn";
-
+        String key2 = "Veronica";
+        double cosine = cosine(key1, key2, stringMap);
+        System.out.println("(" + key1 + "," + key2 + ")余玄相关系数->" + cosine);
+//        double pearson = pearson(key1, key2, stringMap);
+//        System.out.println("(" + key1 + "," + key2 + ")皮尔逊相关系数->" + pearson);
 //        float manhattan = manhattan(key1, key2, stringMap);
 //        System.out.println("(" + key1 + "," + key2 + ")曼哈顿距离->" + manhattan);
 //        float euclidean = euclidean(key1, key2, stringMap);
@@ -37,7 +40,7 @@ public class FilteringData {
 //
 //        float minkowsk = minkowsk(key1, key2, stringMap, 2);
 //        System.out.println("(" + key1 + "," + key2 + ")明氏距离->" + minkowsk);
-        recommend(key1, stringMap);
+        //recommend(key1, stringMap);
 
         return null;
     }
@@ -105,6 +108,7 @@ public class FilteringData {
     }
 
     /**
+     * 曼哈頓距離(|x1-x2|+|y1-y2|)
      *
      * @param use1
      * @param use2
@@ -125,7 +129,9 @@ public class FilteringData {
     }
 
     /**
-     * 欧几里得距离
+     * 欧几里得距离(\sqrt{a^2+b^2})
+     * a平方加上b平方开方
+     *
      * @param use1
      * @param use2
      * @param stringMap
@@ -144,6 +150,15 @@ public class FilteringData {
         return (float) Math.sqrt(sum);
     }
 
+    /**
+     * 明氏距離
+     *
+     * @param use1
+     * @param use2
+     * @param stringMap
+     * @param r
+     * @return
+     */
     public float minkowsk(String use1, String use2, Map<String, String[]> stringMap, int r) {
         String[] strings1 = stringMap.get(use1);
         String[] strings2 = stringMap.get(use2);
@@ -158,11 +173,95 @@ public class FilteringData {
         return (float) Math.pow(sum, 1.0 / r);
     }
 
+    /**
+     * 皮尔逊相似度
+     *
+     * @param use1
+     * @param use2
+     * @param stringMap
+     * @return
+     */
+    public double pearson(String use1, String use2, Map<String, String[]> stringMap) {
+        String[] strings1 = stringMap.get(use1);
+        String[] strings2 = stringMap.get(use2);
+        float sum_xy = 0;
+        float sum_x = 0;
+        float sum_y = 0;
+        float sum_x2 = 0;
+        float sum_y2 = 0;
+        int n = 0;
+
+        for (int i = 0; i < strings1.length; i++) {
+            if (StringUtils.isBlank(strings1[i]) || StringUtils.isBlank(strings2[i])) {
+                continue;
+            }
+            n++;
+            float x = Float.parseFloat(strings1[i]);
+            float y = Float.parseFloat(strings2[i]);
+            //x*y的累加之和
+            sum_xy += x * y;
+            //x的累加之和
+            sum_x += x;
+            //y的累加之和
+            sum_y += y;
+            //x的平方累加之和
+            sum_x2 += Math.pow(x, 2);
+            //y的平方累加之和
+            sum_y2 += Math.pow(y, 2);
+        }
+        if (n == 0) {
+            return 0;
+        }
+        double denominator = Math.sqrt(sum_x2 - (Math.pow(sum_x, 2) / n)) * Math.sqrt(sum_y2 - (Math.pow(sum_y, 2) / n));
+        if (denominator == 0) {
+            return 0;
+        }
+        double r = (sum_xy - ((sum_x * sum_y) / n)) / denominator;
+        return r;
+    }
+
+    /**
+     * 余玄相似度
+     * cos(x,y)=(x*y) / (||x||*||y||)
+     *
+     * @param use1
+     * @param use2
+     * @param stringMap
+     * @return
+     */
+    public double cosine(String use1, String use2, Map<String, String[]> stringMap) {
+        String[] strings1 = stringMap.get(use1);
+        String[] strings2 = stringMap.get(use2);
+        float sum_x2 = 0;
+        float sum_y2 = 0;
+        float sum_xy = 0;
+        for (int i = 0; i < strings1.length; i++) {
+            float x;
+            float y;
+            if (StringUtils.isBlank(strings1[i])) {
+                x = 0f;
+            } else {
+                x = Float.parseFloat(strings1[i]);
+            }
+            if (StringUtils.isBlank(strings2[i])) {
+                y = 0;
+            } else {
+                y = Float.parseFloat(strings2[i]);
+            }
+            sum_xy += x * y;
+            sum_x2 += Math.pow(x, 2);
+            sum_y2 += Math.pow(y, 2);
+        }
+        double denominator = Math.sqrt(sum_x2) * Math.sqrt(sum_y2);
+
+        return sum_xy / denominator;
+    }
+
     public static void main(String[] args) throws IOException, URISyntaxException {
         FilteringData filteringData = new FilteringData();
         URL resource = FilteringData.class.getResource("input.txt");
         System.out.println(resource);
         System.out.println(resource.toURI().getPath());
-        INDArray load = filteringData.load("D:/git/study/machine-learning-algorithm/target/classes/data/mining/ch2/input.txt");
+        INDArray load = filteringData.load("C:/Users/gbs/git/study/machine-learning-algorithm/target/classes/data/mining/ch2/input.txt");
     }
 }
