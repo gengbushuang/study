@@ -27,12 +27,12 @@ public class FilteringData {
 //            }
         }
 
-        String key1 = "Angelica";
-        String key2 = "Veronica";
-        double cosine = cosine(key1, key2, stringMap);
-        System.out.println("(" + key1 + "," + key2 + ")余玄相关系数->" + cosine);
-//        double pearson = pearson(key1, key2, stringMap);
-//        System.out.println("(" + key1 + "," + key2 + ")皮尔逊相关系数->" + pearson);
+        String key1 = "Jordyn";
+        String key2 = "Sam";
+//        double cosine = cosine(key1, key2, stringMap);
+//        System.out.println("(" + key1 + "," + key2 + ")余玄相关系数->" + cosine);
+        double pearson = pearson(key1, key2, stringMap);
+        System.out.println("(" + key1 + "," + key2 + ")皮尔逊相关系数->" + pearson);
 //        float manhattan = manhattan(key1, key2, stringMap);
 //        System.out.println("(" + key1 + "," + key2 + ")曼哈顿距离->" + manhattan);
 //        float euclidean = euclidean(key1, key2, stringMap);
@@ -262,6 +262,6 @@ public class FilteringData {
         URL resource = FilteringData.class.getResource("input.txt");
         System.out.println(resource);
         System.out.println(resource.toURI().getPath());
-        INDArray load = filteringData.load("C:/Users/gbs/git/study/machine-learning-algorithm/target/classes/data/mining/ch2/input.txt");
+        INDArray load = filteringData.load("D:/git/study/machine-learning-algorithm/target/classes/data/mining/ch2/input.txt");
     }
 }
