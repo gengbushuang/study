@@ -1,23 +1,22 @@
 package data.mining.ch2;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import org.apache.commons.lang3.StringUtils;
 import org.nd4j.shade.jackson.core.type.TypeReference;
 import org.nd4j.shade.jackson.databind.ObjectMapper;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.Map.Entry;
+
 public class Recommender {
 
-   private static Comparator<TwoTuple<String, Double>> TwoTupleSort = new Comparator<TwoTuple<String, Double>>() {
+    private static Comparator<TwoTuple<String, Double>> TwoTupleSort = new Comparator<TwoTuple<String, Double>>() {
         @Override
         public int compare(TwoTuple<String, Double> o1, TwoTuple<String, Double> o2) {
             double v = o2.second - o1.second;
@@ -30,7 +29,9 @@ public class Recommender {
         }
     };
 
-    int k = 1;
+    int k = 3;
+
+    int n = 5;
 
     public HashMap<String, HashMap<String, String>> load(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
@@ -44,7 +45,7 @@ public class Recommender {
         return hashMap;
     }
 
-    public void recommend(String userName, HashMap<String, HashMap<String, String>> userMap) {
+    public List<TwoTuple<String, Double>> recommend(String userName, HashMap<String, HashMap<String, String>> userMap) {
         HashMap<String, Double> recommendations = new HashMap<>();
 
         List<TwoTuple<String, Double>> nearest = computeNearestNeighbor(userName, userMap);
@@ -52,25 +53,28 @@ public class Recommender {
         HashMap<String, String> userRatings = userMap.get(userName);
 
         double totalDistance = 0.0d;
-        //相加topk的皮尔逊系数
+        //累加相邻K的皮尔系数
         for (int i = 0; i <= k; i++) {
             totalDistance += nearest.get(i).second;
         }
         //计算topk的皮尔系数占比影响
         for (int i = 0; i <= k; i++) {
+            //
             double weight = nearest.get(i).second / totalDistance;
             String name = nearest.get(i).first;
-
+            //获取相邻的评分信息
             HashMap<String, String> neighborRatings = userMap.get(name);
             for (Entry<String, String> entry : neighborRatings.entrySet()) {
+                //判断跟相邻用户否有相同的评分
                 if (!userRatings.containsKey(entry.getKey())) {
+                    //累积相同评分皮尔系数权重
+                    double v;
                     if (!recommendations.containsKey(entry.getKey())) {
-                        double v = weight + Double.parseDouble(entry.getValue());
-                        recommendations.put(entry.getKey(), v);
+                        v = weight * Double.parseDouble(entry.getValue());
                     } else {
-                        double v = recommendations.get(entry.getKey()) + weight + Double.parseDouble(entry.getValue());
-                        recommendations.put(entry.getKey(), v);
+                        v = recommendations.get(entry.getKey()) + weight * Double.parseDouble(entry.getValue());
                     }
+                    recommendations.put(entry.getKey(), v);
                 }
             }
         }
@@ -81,8 +85,7 @@ public class Recommender {
         }
         recommendationsList.sort(TwoTupleSort);
 
-
-        System.out.println(recommendationsList);
+        return recommendationsList.subList(0, recommendationsList.size() > n ? n : recommendationsList.size());
     }
 
     public List<TwoTuple<String, Double>> computeNearestNeighbor(String userName, HashMap<String, HashMap<String, String>> userMap) {
@@ -137,13 +140,61 @@ public class Recommender {
         return r;
     }
 
+    public String trim(String value, char c) {
+        int len = value.length();
+        int st = 0;
+        char[] val = value.toCharArray();
+
+        while ((st < len) && (val[st] <= c)) {
+            st++;
+        }
+        while ((st < len) && (val[len - 1] <= c)) {
+            len--;
+        }
+        return ((st > 0) || (len < value.length())) ? value.substring(st, len) : value;
+    }
+
+    public HashMap<String, HashMap<String, String>> loadBookDB(String path) throws IOException {
+        System.out.println(path + "test.log");
+        HashMap<String, HashMap<String, String>> hashMap = new HashMap<>();
+        try (BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(path + "test.log"), Charset.forName("UTF-8"));) {
+            String line = bufferedReader.readLine();
+            line = bufferedReader.readLine();
+            while (line != null) {
+                String[] tokens = StringUtils.split(line, ';');
+                String userId = this.trim(tokens[0], '"');
+                String bookId = this.trim(tokens[1], '"');
+                String rating = this.trim(tokens[2], '"');
+                HashMap<String, String> map;
+                if (hashMap.containsKey(userId)) {
+                    map = hashMap.get(userId);
+                    if (map.containsKey(bookId)) {
+                        System.out.println(line);
+                    }
+                    map.put(bookId, rating);
+                } else {
+                    map = new HashMap<>();
+                    map.put(bookId, rating);
+                    hashMap.put(userId, map);
+                }
+                line = bufferedReader.readLine();
+
+            }
+        }
+        System.out.println(hashMap.size());
+        return hashMap;
+    }
+
     public static void main(String[] args) throws URISyntaxException, IOException {
         Recommender recommender = new Recommender();
         URL resource = Recommender.class.getResource("data.txt");
         System.out.println(resource);
         System.out.println(resource.toURI().getPath());
-        HashMap<String, HashMap<String, String>> mapHashMap = recommender.load("D:/git/study/machine-learning-algorithm/target/classes/data/mining/ch2/data.txt");
-        recommender.recommend("Hailey", mapHashMap);
-
+//        HashMap<String, HashMap<String, String>> mapHashMap = recommender.load("D:/git/study/machine-learning-algorithm/target/classes/data/mining/ch2/data.txt");
+//        List<TwoTuple<String, Double>> recommend = recommender.recommend("Jordyn", mapHashMap);
+//        System.out.println(recommend);
+        HashMap<String, HashMap<String, String>> hashMap = recommender.loadBookDB("D:/tmp/BX-CSV-Dump/");
+        List<TwoTuple<String, Double>> recommend = recommender.recommend("171118", hashMap);
+        System.out.println(recommend);
     }
 }
