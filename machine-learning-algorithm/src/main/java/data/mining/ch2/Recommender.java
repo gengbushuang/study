@@ -29,9 +29,20 @@ public class Recommender {
         }
     };
 
-    int k = 3;
+    private int k;
 
-    int n = 5;
+    private int n;
+
+    private Map<String, String> bookTitle = new HashMap<>();
+
+    public Recommender() {
+        this(3, 5);
+    }
+
+    public Recommender(int k, int n) {
+        this.k = k;
+        this.n = n;
+    }
 
     public HashMap<String, HashMap<String, String>> load(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
@@ -51,12 +62,13 @@ public class Recommender {
         List<TwoTuple<String, Double>> nearest = computeNearestNeighbor(userName, userMap);
 
         HashMap<String, String> userRatings = userMap.get(userName);
-
+        //System.out.println(nearest);
         double totalDistance = 0.0d;
         //累加相邻K的皮尔系数
         for (int i = 0; i <= k; i++) {
             totalDistance += nearest.get(i).second;
         }
+        System.out.println("totalDistance--->" + totalDistance);
         //计算topk的皮尔系数占比影响
         for (int i = 0; i <= k; i++) {
             //
@@ -80,8 +92,14 @@ public class Recommender {
         }
 
         List<TwoTuple<String, Double>> recommendationsList = new ArrayList<>();
+        String id;
         for (Entry<String, Double> entry : recommendations.entrySet()) {
-            recommendationsList.add(new TwoTuple(entry.getKey(), entry.getValue()));
+            if (bookTitle.containsKey(entry.getKey())) {
+                id = bookTitle.get(entry.getKey());
+            } else {
+                id = entry.getKey();
+            }
+            recommendationsList.add(new TwoTuple(id, entry.getValue()));
         }
         recommendationsList.sort(TwoTupleSort);
 
@@ -103,20 +121,20 @@ public class Recommender {
 
     public double pearson(HashMap<String, String> user1, HashMap<String, String> user2) {
 
-        float sum_xy = 0;
-        float sum_x = 0;
-        float sum_y = 0;
-        float sum_x2 = 0;
-        float sum_y2 = 0;
-        int n = 0;
+        double sum_xy = 0.0d;
+        double sum_x = 0.0d;
+        double sum_y = 0.0d;
+        double sum_x2 = 0.0d;
+        double sum_y2 = 0.0d;
+        double n = 0.0d;
 
         for (Map.Entry<String, String> entry : user1.entrySet()) {
             if (!user2.containsKey(entry.getKey())) {
                 continue;
             }
-            n++;
-            float x = Float.parseFloat(entry.getValue());
-            float y = Float.parseFloat(user2.get(entry.getKey()));
+            n += 1;
+            double x = Double.parseDouble(entry.getValue());
+            double y = Double.parseDouble(user2.get(entry.getKey()));
 
             // x*y的累加之和
             sum_xy += x * y;
@@ -132,11 +150,12 @@ public class Recommender {
         if (n == 0) {
             return 0;
         }
-        double denominator = Math.sqrt(sum_x2 - (Math.pow(sum_x, 2) / n)) * Math.sqrt(sum_y2 - (Math.pow(sum_y, 2) / n));
+        double denominator = Math.sqrt(sum_x2 - Math.pow(sum_x, 2) / n)
+                * Math.sqrt(sum_y2 - Math.pow(sum_y, 2) / n);
         if (denominator == 0) {
             return 0;
         }
-        double r = (sum_xy - ((sum_x * sum_y) / n)) / denominator;
+        double r = (sum_xy - (sum_x * sum_y) / n) / denominator;
         return r;
     }
 
@@ -155,9 +174,8 @@ public class Recommender {
     }
 
     public HashMap<String, HashMap<String, String>> loadBookDB(String path) throws IOException {
-        System.out.println(path + "test.log");
         HashMap<String, HashMap<String, String>> hashMap = new HashMap<>();
-        try (BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(path + "test.log"), Charset.forName("UTF-8"));) {
+        try (BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(path + "BX-Book-Ratings.txt"), Charset.forName("UTF-8"));) {
             String line = bufferedReader.readLine();
             line = bufferedReader.readLine();
             while (line != null) {
@@ -182,16 +200,27 @@ public class Recommender {
             }
         }
         System.out.println(hashMap.size());
+
+
+        try (BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(path + "BX-Books.txt"), Charset.forName("UTF-8"));) {
+            String line = bufferedReader.readLine();
+            line = bufferedReader.readLine();
+            while (line != null) {
+                String[] tokens = StringUtils.split(line, ';');
+                String isbn = this.trim(tokens[0], '"');
+                String title = this.trim(tokens[1], '"');
+                bookTitle.put(isbn, title);
+                line = bufferedReader.readLine();
+
+            }
+        }
         return hashMap;
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException {
-        Recommender recommender = new Recommender();
-        URL resource = Recommender.class.getResource("data.txt");
-        System.out.println(resource);
-        System.out.println(resource.toURI().getPath());
+        Recommender recommender = new Recommender(5, 6);
 //        HashMap<String, HashMap<String, String>> mapHashMap = recommender.load("D:/git/study/machine-learning-algorithm/target/classes/data/mining/ch2/data.txt");
-//        List<TwoTuple<String, Double>> recommend = recommender.recommend("Jordyn", mapHashMap);
+//        List<TwoTuple<String, Double>> recommend = recommender.recommend("Hailey", mapHashMap);
 //        System.out.println(recommend);
         HashMap<String, HashMap<String, String>> hashMap = recommender.loadBookDB("D:/tmp/BX-CSV-Dump/");
         List<TwoTuple<String, Double>> recommend = recommender.recommend("171118", hashMap);
