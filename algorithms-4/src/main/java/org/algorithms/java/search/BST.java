@@ -174,5 +174,62 @@ public class BST<K extends Comparable<K>, V> {
         }
     }
 
+    public void deleteMin(){
+        deleteMin(root);
+    }
+        //s left !=null e
+    //e left !=null a
+    //a left ==null c
+    //
+    private Node deleteMin(Node node) {
+        if(node.left==null){
+            return node.right;
+        }
+        node.left = deleteMin(node.left);
+        node.n = size(node.left) + size(node.right) + 1;
+        return node;
+    }
 
+    public void delete(K k){
+        delete(root,k);
+    }
+
+    private Node delete(Node node, K k) {
+        if(node==null){
+            return null;
+        }
+        int compare = k.compareTo(node.k);
+        if (compare < 0) {
+            node.left = delete(node.left, k);
+        } else if (compare > 0) {
+            node.right = delete(node.right, k);
+        }else {
+            if (node.left == null) {
+                return node.right;
+            } else if (node.right == null) {
+                return node.left;
+            } else {
+                Node x = min(node.right);
+                x.right = deleteMin(node.right);
+                x.left = node.left;
+                x.n = size(x.left) + size(x.right) + 1;
+                return x;
+            }
+        }
+        node.n = size(node.left) + size(node.right) + 1;
+        return node;
+    }
+
+    public static void main(String[] args) {
+        BST<String,String> bst = new BST<String,String>();
+        bst.put("S","s");
+        bst.put("E","e");
+        bst.put("X","x");
+        bst.put("A","a");
+        bst.put("R","r");
+        bst.put("C","c");
+        bst.put("H","h");
+        bst.put("M","m");
+        bst.delete("E");
+    }
 }
