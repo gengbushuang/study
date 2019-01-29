@@ -48,6 +48,9 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         return node == null ? 0 : node.n;
     }
 
+    public boolean isEmpty() {
+        return root == null;
+    }
 
     public void put(Key k,Value v){
         root = put(root,k,v);
@@ -81,6 +84,32 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         node.n = size(node.left) + size(node.right) + 1;
         return node;
     }
+
+    public void deleteMin() {
+        if (!isRed(root.left) && !isRed(root.right)) {
+            root.color = RED;
+        }
+        root = deleteMin(root);
+        if (!isEmpty()) {
+            root.color = BLACK;
+        }
+    }
+
+    private Node deleteMin(Node node){
+        if(node.left==null){
+            return null;
+        }
+        //判断左节点是否是2节点
+        if(!isRed(node.left) && !isRed(node.left.left)){
+            node = moveRedLeft(node);
+        }
+        node.left = deleteMin(node.left);
+        //修复树
+        return balance(node);
+    }
+
+
+
     /**
      * 左旋转
      *         h                          x
@@ -132,9 +161,44 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
     }
 
     void filpColors(Node h) {
-        h.color = RED;
-        h.left.color = BLACK;
-        h.right.color = BLACK;
+//        h.color = RED;
+//        h.left.color = BLACK;
+//        h.right.color = BLACK;
+        h.color = !h.color;
+        h.left.color = !h.left.color;
+        h.right.color = !h.right.color;
+    }
+
+    private Node moveRedLeft(Node node) {
+        //父节点和兄弟节点合并4-节点
+        filpColors(node);
+        //判断兄弟节点是否3-节点
+        if (isRed(node.right.left)) {
+            //
+            node.right = rotateRight(node.right);
+            node = rotateLeft(node);
+            filpColors(node);
+        }
+        return node;
+    }
+
+    /**
+     * 修复树平衡
+     * @param node
+     * @return
+     */
+    Node balance(Node node) {
+        if (isRed(node.right)) {
+            node = rotateLeft(node);
+        }
+        if (isRed(node.left) && isRed(node.left.left)) {
+            node = rotateRight(node);
+        }
+        if (isRed(node.left) && isRed(node.right)) {
+            filpColors(node);
+        }
+        node.n = size(node.left) + size(node.right) + 1;
+        return node;
     }
 
     public static void main(String[] args) {
@@ -149,5 +213,8 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         redBlackBST.put("M","m");
         redBlackBST.put("P","p");
         redBlackBST.put("L","l");
+
+        redBlackBST.deleteMin();
+        redBlackBST.deleteMin();
     }
 }
