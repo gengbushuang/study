@@ -1,13 +1,15 @@
 package data.mining.ch3;
 
-import com.google.common.collect.Lists;
 import org.nd4j.shade.jackson.core.type.TypeReference;
 import org.nd4j.shade.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class CosineSimilarity {
 
@@ -97,6 +99,32 @@ public class CosineSimilarity {
 //        return v1_v2 / denominator;
     }
 
+    /**
+     * 物品的评分归一化
+     *
+     * @param r
+     * @param min
+     * @param max
+     * @return
+     */
+    public double normalization(double r, double min, double max) {
+        double denominator = max - min;
+        double molecule = 2 * (r - min) - (max - min);
+        return molecule / denominator;
+    }
+
+    /**
+     * 还原归一化的评分
+     *
+     * @param nr
+     * @param min
+     * @param max
+     * @return
+     */
+    public double restoreNormalization(double nr, double min, double max) {
+        return 0.5 * ((nr + 1) * (max - min)) + min;
+    }
+
     public HashMap<String, HashMap<String, String>> load(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
 
@@ -111,24 +139,55 @@ public class CosineSimilarity {
 
     public static void main(String[] args) throws IOException {
         CosineSimilarity cosineSimilarity = new CosineSimilarity();
+//        double normalization = cosineSimilarity.normalization(1.0, 1, 5);
+//        System.out.println(normalization);
+//        double restoreNormalization = cosineSimilarity.restoreNormalization(normalization, 1, 5);
+//        System.out.println(restoreNormalization);
+
         HashMap<String, HashMap<String, String>> mapHashMap = cosineSimilarity.load("D:\\git\\study\\machine-learning-algorithm\\src\\main\\java\\data\\mining\\ch3\\data1.txt");
 
 //        String key1 = "Lorde";
 //        String key2 = "Daft Punk";
 //        double cosine = cosineSimilarity.similarity(key1, key2, mapHashMap);
 //        System.out.println("(" + key1 + "," + key2 + ")余玄相关系数->" + cosine);
+//        ArrayList<String> list = Lists.newArrayList("Imagine Dragons", "Daft Punk", "Lorde", "Fall Out Boy", "Kacey Musgraves");
+//        for (String key1 : list) {
+//            for (String key2 : list) {
+//                if (key1.equals(key2)) {
+//                    continue;
+//                }
+//                double cosine = cosineSimilarity.similarity(key1, key2, mapHashMap);
+//                System.out.println("(" + key1 + "," + key2 + ")余玄相关系数->" + cosine);
+//            }
+//        }
 
-        ArrayList<String> list = Lists.newArrayList("Imagine Dragons", "Daft Punk", "Lorde", "Fall Out Boy", "Kacey Musgraves");
-        for (String key1 : list) {
-            for (String key2 : list) {
-                if (key1.equals(key2)) {
-                    continue;
-                }
-                double cosine = cosineSimilarity.similarity(key1, key2, mapHashMap);
-                System.out.println("(" + key1 + "," + key2 + ")余玄相关系数->" + cosine);
+        double snr_sum = 0.0d;
+        double s_sum = 0.0d;
+
+        String name = "David";
+
+        HashMap<String, String> stringHashMap = mapHashMap.get(name);
+        String key1 = "Kacey Musgraves";
+        Set<String> setBind = stringHashMap.keySet();
+        for (String key2 : setBind) {
+            if (key1.equals(key2)) {
+                continue;
             }
+            String sScore = stringHashMap.get(key2);
+            System.out.println(name + "对"+key2+"评分-->" + sScore);
+            double normalization = cosineSimilarity.normalization(Double.parseDouble(sScore), 1, 5);
+            System.out.println(name + "对"+key2+"归一化评分-->" + normalization);
+            double cosine = cosineSimilarity.similarity(key1, key2, mapHashMap);
+//            cosine = new BigDecimal(cosine).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+            System.out.println("(" + key1 + "," + key2 + ")余玄相关系数->" + cosine);
+            System.out.println("========================================");
+            snr_sum+=(cosine*normalization);
+            s_sum+=Math.abs(cosine);
         }
-
+        double v = snr_sum / s_sum;
+        double restoreNormalization = cosineSimilarity.restoreNormalization(v, 1, 5);
+        System.out.println(name + "对"+key1+"归一化评分-->" + v);
+        System.out.println(name + "对"+key1+"评分-->" + restoreNormalization);
 
 
     }
