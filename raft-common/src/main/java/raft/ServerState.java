@@ -9,6 +9,10 @@ public class ServerState {
 	// 在当前获得选票的候选人的ID
 	private int votedFor;
 
+	public void increaseTerm(){
+		this.term += 1;
+	}
+
 	public long getTerm() {
 		return term;
 	}
