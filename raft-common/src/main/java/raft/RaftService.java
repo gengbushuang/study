@@ -127,7 +127,11 @@ public class RaftService {
 	}
 
 	private void requestAppendEntries(PeerServer peer) {
-
+		long currentNextIndex = 0;
+		long commitIndex = 0;
+		long lastLogIndex = 0;
+		long term = 0;
+		long startingIndex = 1;
 	}
 
 	private void enableHeartbeatForPeer(PeerServer peerServer) {
