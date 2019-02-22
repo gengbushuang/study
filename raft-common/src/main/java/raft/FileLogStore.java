@@ -83,7 +83,6 @@ public class FileLogStore {
     public long getFirstAvailableIndex() {
         try {
             this.storeReadLock.lock();
-
             return this.entriesInStore + this.startIndex;
         } finally {
             this.storeReadLock.unlock();

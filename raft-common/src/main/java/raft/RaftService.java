@@ -29,6 +29,14 @@ public class RaftService {
 	private Callable<Void> electionTimeoutTask;
 
 	public RaftService() {
+		//投票数
+		this.votesGranted = 0;
+		//leaderID
+		this.leaderId = -1;
+		//选举状态
+		this.electionCompleted = false;
+
+
 		// 创建随机对象
 		this.random = new Random(Calendar.getInstance().getTimeInMillis());
 
@@ -41,6 +49,9 @@ public class RaftService {
 			}
 		};
 		scheduledExecutorService = Executors.newScheduledThreadPool(2);
+
+		//转换follower角色状态
+		this.role = ServerRole.Follower;
 	}
 
 	/**
