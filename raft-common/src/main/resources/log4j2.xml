@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 日志级别顺序为 TRACE < DEBUG < INFO < WARN < ERROR < FATAL -->
+<!-- status可以去掉，默认为off，功能为是否记录log4j2本身的信息 monitorInterval指log4j2每隔1800秒，自动监控该配置文件 -->
+<Configuration status="off" monitorInterval="180">
+	<!-- properties是配置定义变量参数 -->
+	<properties>
+		<property name="console_log_pattern">%date{yyyy-MM-dd HH:mm:ss_SSS} %level [%thread][%file:%line] - %msg%n</property>
+		<property name="LOG_HOME">logs</property>
+		<property name="FILE_NAME_OUT">all</property>
+	</properties>
+	<Appenders>
+		<Console  name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${console_log_pattern}" />
+        </Console >
+	</Appenders>
+
+	<Loggers>
+		
+		<Root level="info">
+			<appender-ref ref="Console"/>
+		</Root>
+	</Loggers>
+</Configuration>

@@ -54,6 +54,28 @@ public class AsyncUtility {
     }
 
 
+    public static <A> void readFromChannel(AsynchronousByteChannel channel, ByteBuffer buffer, A attachment, CompletionHandler<Integer, A> completionHandler){
+        try{
+            channel.read(
+                    buffer,
+                    new AsyncContext<A>(attachment, completionHandler),
+                    handlerFrom(
+                            (Integer result, AsyncContext<A> a) -> {
+                                int bytesRead = result.intValue();
+                                if (bytesRead == -1 || !buffer.hasRemaining()) {
+                                    a.completionHandler.completed(buffer.position(), a.attachment);
+                                } else {
+                                    readFromChannel(channel, buffer, a.attachment, a.completionHandler);
+                                }
+                            },
+                            (Throwable error, AsyncContext<A> a) -> {
+                                a.completionHandler.failed(error, a.attachment);
+                            }));
+        }catch(Throwable exception){
+            completionHandler.failed(exception, attachment);
+        }
+    }
+
     static class AsyncContext<A> {
         private A attachment;
         private CompletionHandler<Integer, A> completionHandler;

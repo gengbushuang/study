@@ -1,7 +1,6 @@
 package rpc;
 
 import org.apache.logging.log4j.LogManager;
-import org.raft.common.client.RpcTcpClient;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
