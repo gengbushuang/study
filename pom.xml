@@ -13,6 +13,7 @@
         <module>machine-learning-algorithm</module>
         <module>introduction-to-algorithms</module>
         <module>java-thread</module>
+        <module>leetcode</module>
     </modules>
 
     <build>
