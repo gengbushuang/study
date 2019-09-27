@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package targeting;
+
+import "ad.proto";
+
+message Interval {
+	uint64 begin = 1;
+	uint64 end = 2;
+}
+
+message IntervalCoverIndex {
+	message PointInfo {
+		uint64 point = 1;
+		repeated uint32 ids = 2;
+	}
+	repeated PointInfo points = 1;
+}
+
+message AdIndex {
+	uint64 aid = 1;
+	uint32 adinfo_id = 2;  // 广告正排下标
+	repeated uint32 token_id = 3;
+}
+
+message AidIndex {
+	uint64 aid = 1;  // 数据库里面的aid
+	uint32 local_id = 2;  // 本索引块id
+}
+
+message TokenIndex {
+	message ConjunctionHit {
+		uint32 conjunction_id = 1;
+		uint32 predicate_id = 2;
+	}
+	message AdHit {
+		uint32 local_id = 1;
+		bool is_id = 2;		
+	}
+	repeated ConjunctionHit conjunction_hit = 1;
+	repeated AdHit ad_hit = 2;
+}
+
+message ConjunctionIndex {
+	uint32 hit_count = 1;
+	repeated uint32 local_ids = 2;
+}
+
+message AdInfo {
+	ad.AdInfo ad_info = 1;
+	bytes targeting_be = 2;
+	bool offline = 3;
+	uint64 update_time = 4;
+}
+
+message TargetingIndex {
+	IntervalCoverIndex interval_cover_index = 1;
+	repeated TokenIndex token_index = 2;
+	repeated ConjunctionIndex conjunction_index = 3;
+	repeated AdIndex ad_index = 4;
+	repeated AidIndex aid_index = 5;
+	repeated Interval interval_data = 6;
+	uint64 version = 7;
+	repeated AdInfo ad_info = 8;
+	uint64 dump_time = 9;
+}
+

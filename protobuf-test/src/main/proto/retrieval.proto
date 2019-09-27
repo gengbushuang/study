@@ -1,0 +1,43 @@
+syntax="proto3";
+
+package retrieval;
+
+import "ad.proto";
+import "targeting_index.proto";
+
+service RetrievalService {
+  rpc Retrieve (RetrievalRequest) returns (RetrievalResponse) {}
+  rpc QueryInfo (InfoQueryRequest) returns (InfoQueryResponse) {}
+}
+
+message RetrievalRequest {
+  uint64 pos_id = 1;
+  repeated uint64 user_targeting_id = 2;
+  int32 topn = 3;
+}
+
+message AdInfo {
+  message Scoring {
+    uint32 local_id = 1;
+    uint32 ecpm = 2;
+  }
+  Scoring scoring = 1;
+  ad.AdInfo ad_info = 2;
+}
+
+message RetrievalResponse {
+  int32 ret_code = 1;
+  uint64 pos_id = 2;
+  repeated AdInfo ad_info = 3;
+}
+
+message InfoQueryRequest {
+	int32 cmd = 1;
+	uint64 aid = 2;
+}
+
+message InfoQueryResponse {
+	int32 ret_code = 1;
+	repeated uint64 aid = 2;
+	targeting.AdInfo ad_info = 3;
+}
