@@ -1,5 +1,6 @@
 import ad.Ad;
 import com.google.protobuf.TextFormat;
+import targeting.TargetingBe;
 
 public class MainTest {
 
@@ -66,5 +67,8 @@ public class MainTest {
 
         Ad.AdInfo adInfo = builder.build();
         System.out.println(TextFormat.printToString(adInfo));
+
+        TargetingBe.TargetingBE.Builder targetingBeBu = TargetingBe.TargetingBE.newBuilder();
+        TargetingBe.BETree.Builder bETreeBu = TargetingBe.BETree.newBuilder();
     }
 }
