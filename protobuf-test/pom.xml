@@ -34,6 +34,12 @@
             <version>4.1.4.Final</version>
             <classifier>linux-x86_64</classifier>
         </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.11</version>
+        </dependency>
     </dependencies>
     <build>
         <extensions>
