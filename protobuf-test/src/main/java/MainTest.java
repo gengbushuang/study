@@ -65,10 +65,13 @@ public class MainTest {
                 .setOffReportValid(0)
                 .setShowCondition(0);
 
-        Ad.AdInfo adInfo = builder.build();
-        System.out.println(TextFormat.printToString(adInfo));
+//        Ad.AdInfo adInfo = builder.build();
+//        System.out.println(TextFormat.printToString(adInfo));
+//
+//        TargetingBe.TargetingBE.Builder targetingBeBu = TargetingBe.TargetingBE.newBuilder();
+//        TargetingBe.BETree.Builder bETreeBu = TargetingBe.BETree.newBuilder();
 
-        TargetingBe.TargetingBE.Builder targetingBeBu = TargetingBe.TargetingBE.newBuilder();
-        TargetingBe.BETree.Builder bETreeBu = TargetingBe.BETree.newBuilder();
+        int data = 128;
+        System.out.println(data&0x0FFFFFFFFl);
     }
 }

@@ -40,6 +40,45 @@ public class TargetingIndexBuilder {
 
         idRemapping();
         reArrangeData();
+        BuildIntervalCoverIndex(intervalMap, TargetingIndexOuterClass.IntervalCoverIndex.newBuilder());
+    }
+
+    private void BuildIntervalCoverIndex(Map<TargetingIndexOuterClass.Interval, Integer> rangeMapping, TargetingIndexOuterClass.IntervalCoverIndex.Builder ri) {
+        Map<Long, Boolean> existMap = new HashMap<>();
+        existMap.put(0L, true);
+        existMap.put(Long.MAX_VALUE, true);
+
+        for (TargetingIndexOuterClass.Interval r : rangeMapping.keySet()) {
+            existMap.put(r.getBegin(), true);
+            existMap.put(r.getEnd(), true);
+        }
+
+        for (Long p : existMap.keySet()) {
+            TargetingIndexOuterClass.IntervalCoverIndex.PointInfo.Builder ppB = TargetingIndexOuterClass.IntervalCoverIndex.PointInfo.newBuilder();
+            ppB.setPoint(p);
+            ri.addPoints(ppB);
+        }
+        //排序
+        //ri.getPointsList();
+        Map<Long, Integer> pMapIndex = new HashMap<>();
+        List<TargetingIndexOuterClass.IntervalCoverIndex.PointInfo> pointsList = ri.getPointsList();
+        for(int i = 0;i<ri.getPointsCount();i++){
+            TargetingIndexOuterClass.IntervalCoverIndex.PointInfo p = pointsList.get(i);
+            pMapIndex.put(p.getPoint(),i);
+        }
+
+        for (Map.Entry<TargetingIndexOuterClass.Interval, Integer> entry:rangeMapping.entrySet()){
+            Integer b = pMapIndex.get(entry.getKey().getBegin());
+            Integer e = pMapIndex.get(entry.getKey().getEnd());
+            for(int i = b.intValue();i<e.intValue();i++){
+                ri.getPointsBuilder(i).addIds(entry.getValue());
+            }
+        }
+
+        for (TargetingIndexOuterClass.IntervalCoverIndex.PointInfo p : ri.getPointsList()) {
+            Collections.sort(p.getIdsList());
+        }
+
     }
 
     private void idRemapping() {
@@ -80,11 +119,15 @@ public class TargetingIndexBuilder {
         }
         //
         for (TargetingIndexOuterClass.TokenIndex.Builder tokenIndexB : tokenIndexVec) {
-            for (TargetingIndexOuterClass.TokenIndex.ConjunctionHit.Builder conjHitB: tokenIndexB.getConjunctionHitBuilderList()) {
+            for (TargetingIndexOuterClass.TokenIndex.ConjunctionHit.Builder conjHitB : tokenIndexB.getConjunctionHitBuilderList()) {
                 int oldId = conjHitB.getConjunctionId();
                 conjHitB.setConjunctionId(conjIdRemapping[oldId]);
             }
+            //排序
+//            tokenIndexB.getConjunctionHitBuilderList()
         }
+        //排序
+//        aidIndexVec
     }
 
     private void processBe(TargetingBe.TargetingBE be, int localId) {
