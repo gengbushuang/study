@@ -10,14 +10,15 @@ import java.util.*;
 public class TargetingIndexBuilder {
     BetreeParser betreeParser = new BetreeParser();
 
+    TargetingIndexOuterClass.TargetingIndex.Builder targetingIndexB;
     //key-->conj的MD5
     //value-->conjId
-    private Map<String, Integer> conjFingerMap = new HashMap<>();
+    private Map<String, Integer> conjFingerMap;
     private List<TargetingIndexOuterClass.ConjunctionIndex.Builder> conjIndexVec = new ArrayList<>();
     private List<TargetingIndexOuterClass.ConjunctionIndex.Builder> newConjIndexVec;
 
 
-    private Map<TargetingIndexOuterClass.Interval, Integer> intervalMap = new HashMap<>();
+    private Map<TargetingIndexOuterClass.Interval, Integer> intervalMap;
     private List<TargetingIndexOuterClass.Interval> intervalVec = new ArrayList<>();
 
 
@@ -30,6 +31,13 @@ public class TargetingIndexBuilder {
 
     private int[] conjIdRemapping;
 
+    private TargetingIndexOuterClass.IntervalCoverIndex.Builder intervalIndexb;
+
+    public TargetingIndexBuilder(TargetingIndexOuterClass.TargetingIndex.Builder index) {
+        this.targetingIndexB = index;
+        this.intervalMap = new HashMap<>();
+        this.conjFingerMap = new HashMap<>();
+    }
 
     public void build(List<TargetingBe.TargetingBE> beVec) {
         for (int i = 0; i < beVec.size(); i++) {
@@ -40,7 +48,26 @@ public class TargetingIndexBuilder {
 
         idRemapping();
         reArrangeData();
-        BuildIntervalCoverIndex(intervalMap, TargetingIndexOuterClass.IntervalCoverIndex.newBuilder());
+        intervalIndexb = TargetingIndexOuterClass.IntervalCoverIndex.newBuilder();
+        BuildIntervalCoverIndex(intervalMap, intervalIndexb);
+        saveData();
+    }
+
+    private void saveData() {
+        this.targetingIndexB.addAllIntervalData(this.intervalVec);
+        this.targetingIndexB.addAllAdIndex(this.adIndexVec);
+        this.targetingIndexB.addAllAidIndex(this.aidIndexVec);
+        List<TargetingIndexOuterClass.TokenIndex.Builder> tokenIndexVec = this.tokenIndexVec;
+        for (TargetingIndexOuterClass.TokenIndex.Builder b : tokenIndexVec) {
+            this.targetingIndexB.addTokenIndex(b);
+        }
+        List<TargetingIndexOuterClass.ConjunctionIndex.Builder> newConjIndexVec = this.newConjIndexVec;
+        for (TargetingIndexOuterClass.ConjunctionIndex.Builder b : newConjIndexVec) {
+            this.targetingIndexB.addConjunctionIndex(b);
+        }
+//        this.targetingIndexB.addAllTokenIndex(this.tokenIndexVec);
+//        this.targetingIndexB.addAllConjunctionIndex(this.newConjIndexVec);
+        this.targetingIndexB.setIntervalCoverIndex(this.intervalIndexb);
     }
 
     private void BuildIntervalCoverIndex(Map<TargetingIndexOuterClass.Interval, Integer> rangeMapping, TargetingIndexOuterClass.IntervalCoverIndex.Builder ri) {
@@ -59,18 +86,25 @@ public class TargetingIndexBuilder {
             ri.addPoints(ppB);
         }
         //排序
+        Collections.sort(ri.getPointsList(), new Comparator<targeting.TargetingIndexOuterClass.IntervalCoverIndex.PointInfo>() {
+
+            @Override
+            public int compare(TargetingIndexOuterClass.IntervalCoverIndex.PointInfo o1, TargetingIndexOuterClass.IntervalCoverIndex.PointInfo o2) {
+                return (int) (o1.getPoint() - o2.getPoint());
+            }
+        });
         //ri.getPointsList();
         Map<Long, Integer> pMapIndex = new HashMap<>();
         List<TargetingIndexOuterClass.IntervalCoverIndex.PointInfo> pointsList = ri.getPointsList();
-        for(int i = 0;i<ri.getPointsCount();i++){
+        for (int i = 0; i < ri.getPointsCount(); i++) {
             TargetingIndexOuterClass.IntervalCoverIndex.PointInfo p = pointsList.get(i);
-            pMapIndex.put(p.getPoint(),i);
+            pMapIndex.put(p.getPoint(), i);
         }
 
-        for (Map.Entry<TargetingIndexOuterClass.Interval, Integer> entry:rangeMapping.entrySet()){
+        for (Map.Entry<TargetingIndexOuterClass.Interval, Integer> entry : rangeMapping.entrySet()) {
             Integer b = pMapIndex.get(entry.getKey().getBegin());
             Integer e = pMapIndex.get(entry.getKey().getEnd());
-            for(int i = b.intValue();i<e.intValue();i++){
+            for (int i = b.intValue(); i < e.intValue(); i++) {
                 ri.getPointsBuilder(i).addIds(entry.getValue());
             }
         }
@@ -114,6 +148,9 @@ public class TargetingIndexBuilder {
         //
         newConjIndexVec = new ArrayList<>(conjIndexVec.size());
         for (int i = 0; i < conjIndexVec.size(); i++) {
+            newConjIndexVec.add(null);
+        }
+        for (int i = 0; i < conjIndexVec.size(); i++) {
             int newId = conjIdRemapping[i];
             newConjIndexVec.set(newId, conjIndexVec.get(i));
         }
@@ -123,11 +160,29 @@ public class TargetingIndexBuilder {
                 int oldId = conjHitB.getConjunctionId();
                 conjHitB.setConjunctionId(conjIdRemapping[oldId]);
             }
+            List<TargetingIndexOuterClass.TokenIndex.ConjunctionHit> conjunctionHitList = tokenIndexB.getConjunctionHitList();
+            Collections.sort(tokenIndexB.getConjunctionHitList(), new Comparator<TargetingIndexOuterClass.TokenIndex.ConjunctionHit>() {
+                @Override
+                public int compare(TargetingIndexOuterClass.TokenIndex.ConjunctionHit o1, TargetingIndexOuterClass.TokenIndex.ConjunctionHit o2) {
+                    return o1.getConjunctionId()-o2.getConjunctionId();
+                }
+            });
             //排序
-//            tokenIndexB.getConjunctionHitBuilderList()
+//            Collections.sort(tokenIndexB.getConjunctionHitBuilderList(), new Comparator<TargetingIndexOuterClass.TokenIndex.ConjunctionHit.Builder>() {
+//                @Override
+//                public int compare(TargetingIndexOuterClass.TokenIndex.ConjunctionHit.Builder o1, TargetingIndexOuterClass.TokenIndex.ConjunctionHit.Builder o2) {
+//                    return o1.getConjunctionId() - o2.getConjunctionId();
+//                }
+//            });
         }
         //排序
-//        aidIndexVec
+        Collections.sort(aidIndexVec, new Comparator<TargetingIndexOuterClass.AidIndex>() {
+            @Override
+            public int compare(TargetingIndexOuterClass.AidIndex o1, TargetingIndexOuterClass.AidIndex o2) {
+                return (int) (o1.getAid() - o2.getAid());
+            }
+        });
+
     }
 
     private void processBe(TargetingBe.TargetingBE be, int localId) {
