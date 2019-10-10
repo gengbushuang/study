@@ -86,14 +86,18 @@ public class TargetingIndexBuilder {
             ri.addPoints(ppB);
         }
         //排序
-        Collections.sort(ri.getPointsList(), new Comparator<targeting.TargetingIndexOuterClass.IntervalCoverIndex.PointInfo>() {
-
+        List<TargetingIndexOuterClass.IntervalCoverIndex.PointInfo> pointsList1 = ri.getPointsList();
+        TargetingIndexOuterClass.IntervalCoverIndex.PointInfo[] pointInfos = pointsList1.toArray(new TargetingIndexOuterClass.IntervalCoverIndex.PointInfo[0]);
+        Arrays.sort(pointInfos, new Comparator<TargetingIndexOuterClass.IntervalCoverIndex.PointInfo>() {
             @Override
             public int compare(TargetingIndexOuterClass.IntervalCoverIndex.PointInfo o1, TargetingIndexOuterClass.IntervalCoverIndex.PointInfo o2) {
                 return (int) (o1.getPoint() - o2.getPoint());
             }
         });
-        //ri.getPointsList();
+        for(int i =0;i<pointInfos.length;i++){
+            ri.setPoints(i,pointInfos[i]);
+        }
+        //////////
         Map<Long, Integer> pMapIndex = new HashMap<>();
         List<TargetingIndexOuterClass.IntervalCoverIndex.PointInfo> pointsList = ri.getPointsList();
         for (int i = 0; i < ri.getPointsCount(); i++) {
@@ -108,9 +112,20 @@ public class TargetingIndexBuilder {
                 ri.getPointsBuilder(i).addIds(entry.getValue());
             }
         }
-
-        for (TargetingIndexOuterClass.IntervalCoverIndex.PointInfo p : ri.getPointsList()) {
-            Collections.sort(p.getIdsList());
+        for(TargetingIndexOuterClass.IntervalCoverIndex.PointInfo.Builder pB: ri.getPointsBuilderList()){
+            ////排序
+            List<Integer> idsList =  pB.getIdsList();
+            Integer[] integers = idsList.toArray(new Integer[0]);
+            Arrays.sort(integers, new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return o1.intValue()-o2.intValue();
+                }
+            });
+            for(int i = 0;i<integers.length;i++){
+                pB.setIds(i,integers[i].intValue());
+            }
+            ////////////
         }
 
     }
@@ -160,20 +175,19 @@ public class TargetingIndexBuilder {
                 int oldId = conjHitB.getConjunctionId();
                 conjHitB.setConjunctionId(conjIdRemapping[oldId]);
             }
+            ////////////排序
             List<TargetingIndexOuterClass.TokenIndex.ConjunctionHit> conjunctionHitList = tokenIndexB.getConjunctionHitList();
-            Collections.sort(tokenIndexB.getConjunctionHitList(), new Comparator<TargetingIndexOuterClass.TokenIndex.ConjunctionHit>() {
+            TargetingIndexOuterClass.TokenIndex.ConjunctionHit[] conjunctionHits = conjunctionHitList.toArray(new TargetingIndexOuterClass.TokenIndex.ConjunctionHit[0]);
+            Arrays.sort(conjunctionHits, new Comparator<TargetingIndexOuterClass.TokenIndex.ConjunctionHit>() {
                 @Override
                 public int compare(TargetingIndexOuterClass.TokenIndex.ConjunctionHit o1, TargetingIndexOuterClass.TokenIndex.ConjunctionHit o2) {
-                    return o1.getConjunctionId()-o2.getConjunctionId();
+                    return o1.getConjunctionId() - o2.getConjunctionId();
                 }
             });
-            //排序
-//            Collections.sort(tokenIndexB.getConjunctionHitBuilderList(), new Comparator<TargetingIndexOuterClass.TokenIndex.ConjunctionHit.Builder>() {
-//                @Override
-//                public int compare(TargetingIndexOuterClass.TokenIndex.ConjunctionHit.Builder o1, TargetingIndexOuterClass.TokenIndex.ConjunctionHit.Builder o2) {
-//                    return o1.getConjunctionId() - o2.getConjunctionId();
-//                }
-//            });
+            for(int i = 0;i<conjunctionHits.length;i++) {
+                tokenIndexB.setConjunctionHit(i,conjunctionHits[i]);
+            }
+            //////////////
         }
         //排序
         Collections.sort(aidIndexVec, new Comparator<TargetingIndexOuterClass.AidIndex>() {
