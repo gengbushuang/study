@@ -14,8 +14,20 @@
         <module>introduction-to-algorithms</module>
         <module>java-thread</module>
         <module>leetcode</module>
+        <module>json</module>
+        <module>mit-6.824</module>
+        <module>protobuf-test</module>
+        <module>distributed-transaction</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
