@@ -14,50 +14,36 @@ package algorithms.primary.array;
 public class Solution2 {
 
     public int maxProfit(int[] prices) {
-        //0是没有购买
-        //1为已经购买
-        //
-        boolean isBuy = true;
-        int lastTime = 0;
+        if (prices.length < 2) {
+            return 0;
+        }
+        boolean isBuy = false;
         int sum = 0;
-        for (int i = 0; i < prices.length; i++) {
-            if (i == 0) {
-                if (prices[i] < prices[i + 1]) {
-                    //买入
-                    lastTime = prices[i];
-                    isBuy = true;
-                } else {
-                    isBuy = false;
+        for (int i = 1; i < prices.length; i++) {
+            if (prices[i - 1] < prices[i]) {
+                if (!isBuy) {
+                    //System.out.println(isBuy+"(买入),"+prices[i - 1]);
+                    sum-=prices[i - 1];
+                    isBuy=!isBuy;
                 }
-            } else if (i == prices.length - 1) {
-                if (prices[i - 1] < prices[i]) {
-                    //卖出
-                    sum += prices[i] - lastTime;
-                    isBuy = false;
-                } else {
-                    isBuy = true;
-                }
-            } else {
-                if (prices[i - 1] > prices[i] && prices[i] < prices[i + 1]) {
-                    if (!isBuy) {
-                        lastTime = prices[i];
-                        isBuy = true;
-                    }
-
-                } else if (prices[i - 1] < prices[i] && prices[i] > prices[i + 1]) {
-                    if (isBuy) {
-                        //卖出
-                        sum += prices[i] - lastTime;
-                        isBuy = false;
-                    }
+            }else{
+                if(isBuy){
+                    //System.out.println(isBuy+"(卖出),"+prices[i - 1]);
+                    sum+=prices[i - 1];
+                    isBuy=!isBuy;
                 }
             }
         }
+        if(isBuy){
+            sum+=prices[prices.length-1];
+            //System.out.println(isBuy+"(卖出),"+prices[prices.length-1]);
+        }
+
         return sum;
     }
 
     public static void main(String[] args) {
-        int[] prices = {7,1,5,3,6,4};
+        int[] prices = {7,6,4,3,1};
         int sum = new Solution2().maxProfit(prices);
         System.out.println(sum);
     }

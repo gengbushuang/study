@@ -14,10 +14,11 @@
         <module>introduction-to-algorithms</module>
         <module>java-thread</module>
         <module>leetcode</module>
-        <module>json</module>
         <module>mit-6.824</module>
         <module>protobuf-test</module>
         <module>distributed-transaction</module>
+        <module>json-test</module>
+        <module>java-jemalloc</module>
     </modules>
 
     <dependencies>
