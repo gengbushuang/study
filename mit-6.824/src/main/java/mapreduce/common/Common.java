@@ -11,6 +11,15 @@ public class Common {
 
     }
 
+
+    public static String reduceName(String jobName, int mapTask, int reduceTask) {
+        return "mrtmp." + jobName + "-" + mapTask + "-" + reduceTask;
+    }
+
+    public static String mergeName(String jobName, int reduceTask) {
+        return "mrtmp." + jobName + "-res-" + reduceTask;
+    }
+
     public void schedule(String jobName, String[] mapFiles, int nReduce, JobPhase phase) {
         int ntasks;
         int n_other;
