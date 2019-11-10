@@ -671,11 +671,15 @@ public class NewRaftServer implements RaftMessageHandler {
     }
 
 
-    private void snapshotAndCompact(long indexCommitted){
+    private void snapshotAndCompact(long indexCommitted) {
 
-        if(this.raftOptions.getSnapshotDistance()>0&&
-                ((indexCommitted-this.logStore.getStartIndex())>this.raftOptions.getSnapshotDistance())
-                ){
+        //只有提交过的日志索引，并且数目大于设置快照阈值就创建快照
+        if (this.raftOptions.getSnapshotDistance() > 0 &&
+                ((indexCommitted - this.logStore.getStartIndex()) > this.raftOptions.getSnapshotDistance()) &&
+                this.snapshotInProgress.compareAndSet(0, 1)
+                ) {
+
+
             return;
         }
 
@@ -691,8 +695,8 @@ public class NewRaftServer implements RaftMessageHandler {
             this.conditionalLock = new Object();
         }
 
-        void moreToCommit(){
-            synchronized(this.conditionalLock){
+        void moreToCommit() {
+            synchronized (this.conditionalLock) {
                 this.conditionalLock.notify();
             }
         }
@@ -709,9 +713,9 @@ public class NewRaftServer implements RaftMessageHandler {
                     }
                     commitIndex = server.state.getCommitIndex();
                 }
-                
-                while (commitIndex<server.quickCommitIndex && commitIndex<server.logStore.getFirstAvailableIndex() - 1){
-                    commitIndex+=1;
+
+                while (commitIndex < server.quickCommitIndex && commitIndex < server.logStore.getFirstAvailableIndex() - 1) {
+                    commitIndex += 1;
                     LogEntry logEntry = server.logStore.getLogEntryAt(commitIndex);
 
                     server.state.setCommitIndex(commitIndex);
@@ -719,7 +723,7 @@ public class NewRaftServer implements RaftMessageHandler {
                 }
 
                 server.raftContext.getServerStateManager().persistState(server.state);
-                
+
             } catch (Throwable error) {
                 server.logger.error("error {} encountered for committing thread, which should not happen, according to this, state machine may not have further progress, stop the system {}", error, error.getMessage());
                 System.exit(-1);
