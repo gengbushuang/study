@@ -1,10 +1,14 @@
 package mapreduce;
 
-import mapreduce.common.Common;
-import mapreduce.common.FunctionReduce;
-import mapreduce.common.FunctionaMap;
-import mapreduce.common.JobPhase;
+import com.alibaba.fastjson.JSON;
+import mapreduce.common.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -50,5 +54,22 @@ public class Master {
 
         schedule.accept(JobPhase.MAP_PHASE);
         schedule.accept(JobPhase.REDUCE_PHASE);
+    }
+
+    //合并排序
+    public void merge() {
+        Map<String, String> kvs = new HashMap<>();
+        for (int i = 0; i < this.nReduce; i++) {
+            String p = Common.mergeName(this.jobName, i);
+            try {
+                List<String> dec = Files.readAllLines(Paths.get(p));
+                for (String json : dec) {
+                    KeyValue kv = JSON.parseObject(json, KeyValue.class);
+                    kvs.put(kv.getKey(), kv.getValue());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
