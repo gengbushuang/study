@@ -19,6 +19,8 @@
         <module>distributed-transaction</module>
         <module>json-test</module>
         <module>java-jemalloc</module>
+        <module>java-ast</module>
+        <module>java-annotation</module>
     </modules>
 
     <dependencies>
