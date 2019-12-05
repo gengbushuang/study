@@ -3,12 +3,12 @@ package mapreduce;
 import com.alibaba.fastjson.JSON;
 import mapreduce.common.*;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -70,6 +70,20 @@ public class Master {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        //排序
+        Set<String> keys = kvs.keySet();
+        List<String> tmp = new ArrayList<>(keys);
+        Collections.sort(tmp);
+        //内容写入
+        Path path = Paths.get("mrtmp." + this.jobName);
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            for (String k : tmp) {
+                writer.write(String.format("%s: %s\n", k, kvs.get(k)));
+            }
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
