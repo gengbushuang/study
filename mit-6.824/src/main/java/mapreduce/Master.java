@@ -35,12 +35,22 @@ public class Master {
             switch (phase) {
                 case MAP_PHASE:
                     for (int i = 0; i < master.files.length; i++) {
-                        Common.doMap(master.jobName, i, master.files[i], master.nReduce, mapF);
+                        try {
+                            Common.doMap(master.jobName, i, master.files[i], master.nReduce, mapF);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            System.exit(-1);
+                        }
                     }
                     break;
                 case REDUCE_PHASE:
                     for (int i = 0; i < master.nReduce; i++) {
-                        Common.doReduce(master.jobName, i, Common.mergeName(master.jobName, i), master.files.length, reduceF);
+                        try {
+                            Common.doReduce(master.jobName, i, Common.mergeName(master.jobName, i), master.files.length, reduceF);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            System.exit(-1);
+                        }
                     }
                     break;
             }
@@ -54,6 +64,8 @@ public class Master {
 
         schedule.accept(JobPhase.MAP_PHASE);
         schedule.accept(JobPhase.REDUCE_PHASE);
+
+        this.merge();
     }
 
     //合并排序
