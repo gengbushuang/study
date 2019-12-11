@@ -31,10 +31,30 @@ public class Solution8 {
         }
     }
 
+    public void moveZeroes2(int[] nums) {
+        if (nums.length < 2) {
+            return;
+        }
+        int a = 0;
+        int b = 0;
+        for (int i = 0; i < nums.length && b < nums.length-1; i++) {
+            if (nums[i] == 0) {
+                a = b == 0 ? i : b;
+                for (int j = a; j < nums.length; j++) {
+                    if (nums[j] != 0) {
+                        nums[i] = nums[j];
+                        nums[j] = 0;
+                        b = j;
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
     public static void main(String[] args) {
-        int[] nums = {0, 1};
-        new Solution8().moveZeroes(nums);
+        int[] nums = {0,1,0, 0,1,0, 1};
+        new Solution8().moveZeroes2(nums);
         System.out.println(Arrays.toString(nums));
     }
 }
