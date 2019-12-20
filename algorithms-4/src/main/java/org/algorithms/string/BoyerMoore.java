@@ -64,7 +64,7 @@ public class BoyerMoore {
             if (j < 0) {
                 return i;
             }
-            int skip = 0;
+            int skip;
             if (j == n) {
                 ///坏字符串匹配规则
                 skip = j - right[str.charAt(i + j)];
