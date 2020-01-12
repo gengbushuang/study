@@ -34,6 +34,7 @@ public class BreadthFirstPaths {
                     continue;
                 }
                 marked[w] = true;
+                //广度搜索记录顶点，先加入顶点，在往下寻找
                 edgeTo[w] = v.intValue();
                 queue.enqueue(w);
             }
@@ -75,7 +76,7 @@ public class BreadthFirstPaths {
             e1.printStackTrace();
             return;
         }
-        int s = 9;
+        int s = 0;
         BreadthFirstPaths paths = new BreadthFirstPaths(graph,s);
         for (int v = 0; v < graph.V(); v++) {
             System.out.print(s + " to " + v + ": ");

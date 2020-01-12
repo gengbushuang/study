@@ -31,6 +31,7 @@ public class DepthFirstPaths {
             if (marked[w]) {
                 continue;
             }
+            //深度搜索记录顶点，先往下寻找，在加入顶点
             edgeTo[w] = s;//记录了一系列轨迹的,下标是子路径，值是父路径
             dfs(graph, w);
         }
@@ -71,7 +72,7 @@ public class DepthFirstPaths {
             e1.printStackTrace();
             return;
         }
-        int s = 9;
+        int s = 0;
         DepthFirstPaths paths = new DepthFirstPaths(graph, s);
         for (int v = 0; v < graph.V(); v++) {
             System.out.print(s + " to " + v + ": ");
