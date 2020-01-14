@@ -10,18 +10,20 @@ public class ThrowCoin {
 
     public void flipCoin(int n) {
         Map<Integer, Integer> m = Stream.generate(() -> (int) (Math.random() * 2)).limit(n)
-                .collect(Collectors.toMap(x -> x, Function.identity(), (x1, x2) -> x1 + x2));
+                .collect(Collectors.toMap(x -> x, Function.identity(), (x1, x2) -> (x1 == 0 ? 1 : x1) + (x2 == 0 ? 1 : x2)));
         System.out.println(m);
         Collection<Integer> values = m.values();
-        int count = 0;
+        double count = 0;
         for (Integer v : values) {
-           count+=v.intValue();
+            count += v.intValue();
         }
 
-        for(Map.Entry<Integer,INter>)
+        for (Map.Entry<Integer, Integer> entry : m.entrySet()) {
+            System.out.println(entry.getKey() + "--->" + (entry.getValue() / count));
+        }
     }
 
     public static void main(String[] args) {
-        new ThrowCoin().flipCoin(10);
+        new ThrowCoin().flipCoin(10000);
     }
 }
