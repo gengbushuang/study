@@ -1,4 +1,4 @@
-package org.java.thread.promise;
+package org.java.thread.promise.js;
 
 public enum Status {
     STATE_PENDING("pending"),

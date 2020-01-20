@@ -1,8 +1,8 @@
-package org.java.thread.promise;
+package org.java.thread.promise.js;
 
 import java.util.function.Consumer;
 
-public class Promise<R1, R2 extends Throwable> {
+public class PromiseGG<R1, R2 extends Throwable> {
     //一个 promise 有且只有一个状态（pending，fulfilled，rejected 其中之一）
     private Status state = Status.STATE_PENDING;
 
@@ -12,7 +12,7 @@ public class Promise<R1, R2 extends Throwable> {
 
     //2.1.1 pending 状态时：
     //2.1.1.1 可能会转变为 fulfilled 或 rejected 状态
-    public Promise(Executor<R1,R2> executor) {
+    public PromiseGG(ExecutorGG<R1,R2> executor) {
 
         //2.1.2 fulfilled 状态时：
         //2.1.2.1 不能再状态为任何其他状态
