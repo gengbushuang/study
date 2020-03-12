@@ -40,6 +40,7 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.runtime.CalciteContextException;
 import org.apache.calcite.sql.JoinConditionType;
 import org.apache.calcite.sql.JoinType;
+import org.apache.calcite.sql.SqlSubmit;
 import org.apache.calcite.sql.SqlAlter;
 import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.SqlCall;
@@ -982,6 +983,8 @@ SqlNode SqlStmt() :
         stmt = SqlMerge()
     |
         stmt = SqlProcedureCall()
+    |
+        stmt = SqlSubmit()
     )
     {
         return stmt;
@@ -1064,6 +1067,24 @@ SqlSelect SqlSelect() :
         return new SqlSelect(s.end(this), keywordList,
             new SqlNodeList(selectList, Span.of(selectList).pos()),
             fromClause, where, groupBy, having, windowDecls, null, null, null);
+    }
+}
+
+/*
+*自定义
+*
+*
+*/
+
+SqlNode SqlSubmit() :
+{
+    SqlNode stringNode;
+}
+{
+    <SUBMIT> <JOB> <AS>
+    stringNode = StringLiteral()
+    {
+        return new SqlSubmit(getPos(), token.image);
     }
 }
 
@@ -6398,6 +6419,7 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < ISOYEAR: "ISOYEAR" >
 |   < ISOLATION: "ISOLATION" >
 |   < JAVA: "JAVA" >
+|   < JOB: "JOB" >
 |   < JOIN: "JOIN" >
 |   < JSON: "JSON" >
 |   < JSON_ARRAY: "JSON_ARRAY">
@@ -6706,6 +6728,7 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < STRUCTURE: "STRUCTURE" >
 |   < STYLE: "STYLE" >
 |   < SUBCLASS_ORIGIN: "SUBCLASS_ORIGIN" >
+|   < SUBMIT: "SUBMIT" >
 |   < SUBMULTISET: "SUBMULTISET" >
 |   < SUBSET: "SUBSET" >
 |   < SUBSTITUTE: "SUBSTITUTE" >
