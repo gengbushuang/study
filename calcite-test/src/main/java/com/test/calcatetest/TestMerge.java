@@ -71,9 +71,9 @@ public class TestMerge {
                 .build();
         Planner planner = Frameworks.getPlanner(config);
 
-        String sql = "select order_id,sum(pv) as pv from mysqltable group by order_id " +
+        String sql = "select tmp.order_id,sum(tmp.pv) as pv from (select order_id,sum(pv) as pv from mysqltable group by order_id " +
                 "union all " +
-                "select order_id ,sum(pv) as pv from estable group by order_id";
+                "select order_id ,sum(pv) as pv from estable group by order_id) tmp group by tmp.order_id";
 
         SqlNode parse1 = planner.parse(sql);
 
@@ -83,6 +83,9 @@ public class TestMerge {
 
         System.out.println("Before------------------>");
         System.out.print(RelOptUtil.toString(root.rel));
+
+        RelVisitTestOne testOne = new RelVisitTestOne();
+        testOne.go(root.rel);
     }
 
     public static void main(String[] args) {
