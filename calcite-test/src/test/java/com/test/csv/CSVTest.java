@@ -16,23 +16,23 @@ public class CSVTest {
 
     @Test
     public void test() throws Exception {
-//        URL url = CSVTest.class.getResource("/test/model.json");
-//        String str = URLDecoder.decode(url.toString(), "UTF-8");
-//        System.out.println(str);
-//        Properties info = new Properties();
-//        info.put("model", str.replace("file:", str));
-//        //jdbc:calcite:model=src/main/resources/test/model.json
-//        //main\resources\test
-//        Connection connection = DriverManager.getConnection("jdbc:calcite:model=src/main/resources/test/model.json");
-//
-//        String sql = "select name from emps";
-//        Statement statement = connection.createStatement();
-//
-//        ResultSet resultSet = statement.executeQuery(sql);
-//        List<Map<String, Object>> data = getData(resultSet);
-//        for(Map<String, Object> m:data) {
-//            System.out.println(m);
-//        }
+        URL url = CSVTest.class.getResource("/test/model.json");
+        String str = URLDecoder.decode(url.toString(), "UTF-8");
+        System.out.println(str);
+        Properties info = new Properties();
+        info.put("model", str.replace("file:", str));
+        //jdbc:calcite:model=src/main/resources/test/model.json
+        //main\resources\test
+        Connection connection = DriverManager.getConnection("jdbc:calcite:model=src/main/resources/test/model.json");
+
+        String sql = "select EMPNO,NAME,DEPTNO from emps where EMPNO=110";
+        Statement statement = connection.createStatement();
+
+        ResultSet resultSet = statement.executeQuery(sql);
+        List<Map<String, Object>> data = getData(resultSet);
+        for(Map<String, Object> m:data) {
+            System.out.println(m);
+        }
     }
 
 

@@ -1,14 +1,24 @@
 package com.test.calcatetest;
 
+import com.test.calcate.rel.TestRel;
+import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptUtil;
+import org.apache.calcite.plan.RelTraitSet;
+import org.apache.calcite.plan.volcano.VolcanoPlanner;
+import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
+import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rel.type.RelDataTypeSystem;
+import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.AbstractTable;
+import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
+import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.tools.*;
 import org.apache.calcite.util.Pair;
@@ -74,6 +84,9 @@ public class TestMerge {
         String sql = "select tmp.order_id,sum(tmp.pv) as pv from (select order_id,sum(pv) as pv from mysqltable group by order_id " +
                 "union all " +
                 "select order_id ,sum(pv) as pv from estable group by order_id) tmp group by tmp.order_id";
+        //LogicalProject
+        //EnumerableTableScan
+        sql = "select * from mysqltable where order_id>100";
 
         SqlNode parse1 = planner.parse(sql);
 
@@ -84,8 +97,32 @@ public class TestMerge {
         System.out.println("Before------------------>");
         System.out.print(RelOptUtil.toString(root.rel));
 
-        RelVisitTestOne testOne = new RelVisitTestOne();
-        testOne.go(root.rel);
+
+//        RexSimplify rexSimplify = new RexSimplify(
+//                root.rel.getCluster().getRexBuilder(),
+//                RelOptPredicateList.EMPTY,
+//                EXECUTOR
+//        );
+//
+//        RexNode node = rexSimplify.simplify(((LogicalFilter)((LogicalProject) root.rel).getInput()).getCondition());
+////
+//        System.out.println("Before------------------>");
+//        System.out.print(RelOptUtil.toString(root.rel));
+
+        VolcanoPlanner volcanoPlanner = new VolcanoPlanner();
+        RelOptCluster relOptCluster = RelOptCluster.create(volcanoPlanner, new RexBuilder(new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT)));
+        relOptCluster.setMetadataProvider(DefaultRelMetadataProvider.INSTANCE);
+        RelTraitSet desiredTraits = relOptCluster.traitSetOf(TestRel.CONVENTION);
+
+
+        RelNode relNode = root.rel;
+        if (!relNode.getTraitSet().equals(desiredTraits)) {
+            relNode = volcanoPlanner.changeTraits(relNode, desiredTraits);
+        }
+        volcanoPlanner.setRoot(relNode);
+        RelNode finalNode = volcanoPlanner.findBestExp();
+        System.out.println(RelOptUtil.toString(finalNode, SqlExplainLevel.ALL_ATTRIBUTES));
+        System.out.println("After-------------------->");
     }
 
     public static void main(String[] args) {
