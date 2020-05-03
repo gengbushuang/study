@@ -11,5 +11,12 @@
 
     <artifactId>java-test</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
+            <version>1.0-rc6</version>
+        </dependency>
+    </dependencies>
 
 </project>
