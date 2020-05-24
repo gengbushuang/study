@@ -1,0 +1,18 @@
+public static int add(int, int);
+    descriptor: (II)I
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=2 //stack操作栈 locals局部变量表 args_size方法参数
+         0: iconst_0 //把0入栈操作栈中
+         1: istore_2 //操作栈进行出栈放到局部变量表第2个下标中
+         2: iload_0 //把局部变量表第0个下标值入栈到操作栈中
+         3: iload_1 //把局部变量表第1个下标值入栈到操作栈中
+         4: iadd //对操作栈进行出栈相加，相加的数在进行入栈
+         5: istore_2 //操作栈进行出栈放到局部变量表第2个下标中
+         6: iload_2 //把局部变量表第2个下标值入栈到操作栈中
+         7: ireturn //把栈顶元素弹出返回
+      LineNumberTable:
+        line 6: 0
+        line 7: 2
+        line 8: 6
+}
