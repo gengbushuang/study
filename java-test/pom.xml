@@ -17,6 +17,13 @@
             <artifactId>auto-service</artifactId>
             <version>1.0-rc6</version>
         </dependency>
+
+        <!-- Java字节码 ByteBuddy -->
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.10.9</version>
+        </dependency>
     </dependencies>
 
 </project>
