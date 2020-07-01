@@ -24,6 +24,12 @@
             <artifactId>byte-buddy</artifactId>
             <version>1.10.9</version>
         </dependency>
+        <dependency>
+            <groupId>co.elastic.apm</groupId>
+            <artifactId>elastic-apm-agent</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

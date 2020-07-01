@@ -1,4 +1,4 @@
-package com.annotation.processor;
+package com.annotationtest.processor;
 //这个主要自动生成 java spi META-INF/services
 
 import com.google.auto.service.AutoService;
@@ -10,7 +10,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
 import java.util.Set;
 
-@AutoService(Processor.class)
+//@AutoService(Processor.class)
 public class MyAPTProcessor extends AbstractProcessor {
 
 
