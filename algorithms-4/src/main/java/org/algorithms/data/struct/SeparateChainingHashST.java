@@ -2,6 +2,7 @@ package org.algorithms.data.struct;
 
 /**
  * hash链表式
+ *
  * @param <Key>
  * @param <Value>
  */
@@ -94,11 +95,24 @@ public class SeparateChainingHashST<Key, Value> {
         if (capacity <= 0) {
             return 1;
         }
-        int leftZerosNum = Integer.numberOfLeadingZeros(capacity);
-        int rightZerosNum = Integer.numberOfTrailingZeros(capacity);
-        int leftToRightZerosNum = shift - leftZerosNum;
-        int shiftNum = leftToRightZerosNum - rightZerosNum == 1 ? rightZerosNum : leftToRightZerosNum;
-        return 1 << shiftNum;
+        int initialCapacity = capacity;
+        initialCapacity |= initialCapacity >>> 1;
+        initialCapacity |= initialCapacity >>> 2;
+        initialCapacity |= initialCapacity >>> 4;
+        initialCapacity |= initialCapacity >>> 8;
+        initialCapacity |= initialCapacity >>> 16;
+        initialCapacity++;
+
+        if (initialCapacity < 0) {
+            initialCapacity >>>= 1;
+        }
+        return initialCapacity;
+
+//        int leftZerosNum = Integer.numberOfLeadingZeros(capacity);
+//        int rightZerosNum = Integer.numberOfTrailingZeros(capacity);
+//        int leftToRightZerosNum = shift - leftZerosNum;
+//        int shiftNum = leftToRightZerosNum - rightZerosNum == 1 ? rightZerosNum : leftToRightZerosNum;
+//        return 1 << shiftNum;
     }
 
     private void setThreshold(int len) {
@@ -195,7 +209,7 @@ public class SeparateChainingHashST<Key, Value> {
                     if (hoT != null) {
                         hoT.next = null;
                         //扩容也是按照倍数进行扩容
-                        newTab[oldLen+i] = hoH;
+                        newTab[oldLen + i] = hoH;
                     }
 
                 }
@@ -233,5 +247,9 @@ public class SeparateChainingHashST<Key, Value> {
         public Entry<Key, Value> getNext() {
             return next;
         }
+    }
+
+    public static void main(String[] args) {
+        SeparateChainingHashST st = new SeparateChainingHashST(7);
     }
 }
