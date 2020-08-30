@@ -9,7 +9,8 @@ public class WcTest {
 
 
     public static void main(String[] args) {
-        args = new String[]{"C:\\Users\\gbs\\git\\study\\mit-6.824\\wc1.txt"};
+        args = new String[]{"C:\\Users\\gbs\\git\\study\\mit-6.824\\data\\mapreduce\\wc1.txt"};
+        String outPath = "C:\\Users\\gbs\\git\\study\\mit-6.824\\data\\mapreduce\\";
         Master.sequential("wcseq", args, 3,
                 (file, values) -> {
                     String[] words = values.split("\\n|\\v|\\f|\\r| ");

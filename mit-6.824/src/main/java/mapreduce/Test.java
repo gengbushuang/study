@@ -33,6 +33,7 @@ public class Test {
     }
 
     public void TestSequentialSingle() {
+        String outPath = "C:\\Users\\gbs\\git\\study\\mit-6.824\\data\\mapreduce\\";
         Master.sequential("test", makeInputs(5), 3,
                 (file, values) -> {
                     String[] words = values.split("\\n|\\v|\\f|\\r|' '");
