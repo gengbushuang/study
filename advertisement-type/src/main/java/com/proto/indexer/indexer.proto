@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package com.proto.indexer;
+
+message Interval {
+	uint64 begin = 1;
+	uint64 end = 2;
+}
+
+message AssignValue {
+    repeated int32 ival = 1;
+    repeated string sval = 2;
+    repeated Interval intervals = 3;
+}
+
+message Assignment {
+    string name = 1;
+    bool not = 2;
+    AssignValue value = 3;
+}
+
+message Conjunction {
+    repeated Assignment assignments = 1;
+}
+
+message TargetingDNF {
+    uint64 uniqueId = 1;
+    repeated Conjunction conjunctions = 2;
+}

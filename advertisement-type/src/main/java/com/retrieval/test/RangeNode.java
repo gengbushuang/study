@@ -1,7 +1,5 @@
 package com.retrieval.test;
 
-import com.retrieval.indexer.model.token.TokenRange;
-
 public class RangeNode {
 
     private final TokenRange range;

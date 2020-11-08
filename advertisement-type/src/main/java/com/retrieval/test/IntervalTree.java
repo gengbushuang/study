@@ -1,7 +1,5 @@
 package com.retrieval.test;
 
-import com.retrieval.indexer.model.token.TokenRange;
-
 public class IntervalTree {
 
     private final static boolean RED = true;
@@ -159,48 +157,48 @@ public class IntervalTree {
     }
 
     public static void main(String[] args) {
-        TokenRange r1 = new TokenRange("range",15,20);
-        TokenRange r2 = new TokenRange("range",10,30);
-        TokenRange r3 = new TokenRange("range",17,19);
-        TokenRange r4 = new TokenRange("range",5,20);
-        TokenRange r5 = new TokenRange("range",12,15);
-        TokenRange r6 = new TokenRange("range",30,40);
-
-        IntervalTree rangeTree = new IntervalTree();
-        rangeTree.add(r1);
-        rangeTree.add(r2);
-        rangeTree.add(r3);
-        rangeTree.add(r4);
-        rangeTree.add(r5);
-        rangeTree.add(r6);
-        rangeTree.show();
-
-        rangeTree.intervalSearch(new TokenRange("range",6,7));
-
-//        TokenRange r1 = new TokenRange("range",16,21);
-//        TokenRange r2 = new TokenRange("range",8,9);
-//        TokenRange r3 = new TokenRange("range",25,30);
-//        TokenRange r4 = new TokenRange("range",5,8);
-//        TokenRange r5 = new TokenRange("range",15,23);
-//        TokenRange r6 = new TokenRange("range",17,19);
-//        TokenRange r7 = new TokenRange("range",26,26);
-//        TokenRange r8 = new TokenRange("range",0,3);
-//        TokenRange r9 = new TokenRange("range",6,10);
-//        TokenRange r10 = new TokenRange("range",19,20);
+//        TokenRange r1 = new TokenRange("range",15,20);
+//        TokenRange r2 = new TokenRange("range",10,30);
+//        TokenRange r3 = new TokenRange("range",17,19);
+//        TokenRange r4 = new TokenRange("range",5,20);
+//        TokenRange r5 = new TokenRange("range",12,15);
+//        TokenRange r6 = new TokenRange("range",30,40);
 //
 //        IntervalTree rangeTree = new IntervalTree();
-
 //        rangeTree.add(r1);
 //        rangeTree.add(r2);
 //        rangeTree.add(r3);
 //        rangeTree.add(r4);
 //        rangeTree.add(r5);
 //        rangeTree.add(r6);
-//        rangeTree.add(r7);
-//        rangeTree.add(r8);
-//        rangeTree.add(r9);
-//        rangeTree.add(r10);
 //        rangeTree.show();
+
+//        rangeTree.intervalSearch(new TokenRange("range",6,7));
+
+        TokenRange r1 = new TokenRange("range",16,21);
+        TokenRange r2 = new TokenRange("range",8,9);
+        TokenRange r3 = new TokenRange("range",25,30);
+        TokenRange r4 = new TokenRange("range",5,8);
+        TokenRange r5 = new TokenRange("range",15,23);
+        TokenRange r6 = new TokenRange("range",17,19);
+        TokenRange r7 = new TokenRange("range",26,26);
+        TokenRange r8 = new TokenRange("range",0,3);
+        TokenRange r9 = new TokenRange("range",6,10);
+        TokenRange r10 = new TokenRange("range",19,20);
+
+        IntervalTree rangeTree = new IntervalTree();
+
+        rangeTree.add(r1);
+        rangeTree.add(r2);
+        rangeTree.add(r3);
+        rangeTree.add(r4);
+        rangeTree.add(r5);
+        rangeTree.add(r6);
+        rangeTree.add(r7);
+        rangeTree.add(r8);
+        rangeTree.add(r9);
+        rangeTree.add(r10);
+        rangeTree.show();
 
 //        TokenRange r11 = new TokenRange("range",21,21);
 //

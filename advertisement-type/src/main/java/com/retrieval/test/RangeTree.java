@@ -1,13 +1,13 @@
 package com.retrieval.test;
 
-import com.retrieval.indexer.model.token.TokenRange;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class RangeTree {
 
 //    private List<PointInfo> pointVec = new ArrayList<>();
+
+    private IntervalTree intervalTree = new IntervalTree();
 
     private ConcurrentSkipListMap<Long, ArrayList<Integer>> table = new ConcurrentSkipListMap<>();
     private Map<TokenRange,Integer> rmapping = new HashMap<>();
@@ -116,11 +116,12 @@ public class RangeTree {
 //        TokenRange r3 = new TokenRange("range",25,30);
         TokenRange r4 = new TokenRange("range",5,8);
         rangeTree.build(r4,4);
+        rangeTree.build(r4,5);
 //        TokenRange r5 = new TokenRange("range",15,23);
 //        TokenRange r6 = new TokenRange("range",17,19);
 //        TokenRange r7 = new TokenRange("range",26,26);
 //        TokenRange r8 = new TokenRange("range",0,3);
-        TokenRange r9 = new TokenRange("range",10,12);
+        TokenRange r9 = new TokenRange("range",6,10);
         rangeTree.build(r9,9);
 //        TokenRange r10 = new TokenRange("range",19,20);
         rangeTree.search2(9l);

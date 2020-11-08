@@ -1,26 +1,60 @@
 package com.retrieval.indexer.model;
 
-public class DocidNode implements Comparable<DocidNode> {
+import com.retrieval.util.PostingListComparable;
 
-    private final int docid;
+import java.util.Objects;
 
-    private final boolean bt;
+public class DocidNode implements PostingListComparable<DocidNode> {
 
-    public DocidNode(int docid, boolean bt) {
-        this.docid = docid;
-        this.bt = bt;
+    private final long uniqueId;
+
+    private final boolean isNot;
+
+    public DocidNode(long uniqueId, boolean isNot) {
+        this.uniqueId = uniqueId;
+        this.isNot = isNot;
     }
 
-    public int getDocid() {
-        return docid;
+    public long getUniqueId() {
+        return uniqueId;
     }
 
-    public boolean isBt() {
-        return bt;
+    public boolean isNot() {
+        return isNot;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DocidNode docidNode = (DocidNode) o;
+        return uniqueId == docidNode.uniqueId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uniqueId);
     }
 
     @Override
     public int compareTo(DocidNode o) {
-        return this.docid - o.docid;
+        return (int) (this.uniqueId - o.uniqueId);
+    }
+
+    @Override
+    public int compareLess(DocidNode o) {
+        if (this.isNot == o.isNot) {
+            return (int) (this.uniqueId - o.uniqueId);
+        } else {
+            return this.isNot ? 1 : -1;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "DocidNode{" +
+                "uniqueId=" + uniqueId +
+                ", isNot=" + isNot +
+                '}';
     }
 }

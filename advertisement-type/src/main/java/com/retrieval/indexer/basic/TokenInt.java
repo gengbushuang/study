@@ -1,10 +1,10 @@
-package com.retrieval.indexer.model.token;
+package com.retrieval.indexer.basic;
 
 import com.retrieval.indexer.Token;
 
 import java.util.Objects;
 
-public class TokenInt extends Token implements Comparable {
+public class TokenInt extends Token implements Comparable<TokenInt> {
 
     private final int val;
 
@@ -31,10 +31,7 @@ public class TokenInt extends Token implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        if (o instanceof TokenInt) {
-            return this.val - ((TokenInt) o).getVal();
-        }
-        return 0;
+    public int compareTo(TokenInt o) {
+        return this.val - o.getVal();
     }
 }

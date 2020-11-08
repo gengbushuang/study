@@ -1,8 +1,6 @@
-package com.retrieval.indexer.model.token;
+package com.retrieval.test;
 
 import com.retrieval.indexer.Token;
-
-import java.util.Objects;
 
 public class TokenRange extends Token {
     private final long left;

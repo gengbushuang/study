@@ -1,4 +1,4 @@
-package com.retrieval.indexer.model.token;
+package com.retrieval.indexer.basic;
 
 import com.retrieval.indexer.Token;
 
