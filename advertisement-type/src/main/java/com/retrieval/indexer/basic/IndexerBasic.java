@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * 基本倒排索引
+ */
 public class IndexerBasic extends AbsIndexer {
 
     private ConcurrentMap<Token, PostingList<DocidNode>> table = new ConcurrentHashMap<>();

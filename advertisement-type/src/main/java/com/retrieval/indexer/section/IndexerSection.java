@@ -13,6 +13,9 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * 区间索引
+ */
 public class IndexerSection extends AbsIndexer {
 
     private Map<TokenSection, Integer> rmapping = new HashMap<>();
