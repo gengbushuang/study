@@ -4,11 +4,8 @@ public class IndexManager {
 
 //    private IndexProcessor indexProcessor;
 //
-//    private Store<Integer,Dnf> store;
-//
 //    public IndexManager(){
 //        indexProcessor = new IndexProcessor();
-//        store = new MemoryStore();
 //    }
 //
 //    public void update(Dnf dnf){

@@ -2,7 +2,10 @@ package com.retrieval;
 
 import com.proto.indexer.Indexer;
 import com.retrieval.indexer.IndexerManager;
+import com.retrieval.model.Query;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class IndexProcessor {
@@ -49,6 +52,19 @@ public class IndexProcessor {
             }
             table.get(size).delete(conjunction, dnf.getUniqueId());
         }
+    }
+
+
+    public List<Long> search(Query query, int top) {
+        List<Long> response = new ArrayList<>();
+        for (int i = query.getSize(); i >= 0; --i) {
+            if (!table.containsKey(i)) {
+                continue;
+            }
+            List<Long> longs = table.get(i).search(query, top);
+            response.addAll(longs);
+        }
+        return response;
     }
 
 
