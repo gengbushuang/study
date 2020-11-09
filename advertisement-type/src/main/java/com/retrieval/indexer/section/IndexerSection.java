@@ -4,7 +4,7 @@ import com.proto.indexer.Indexer;
 import com.retrieval.indexer.AbsIndexer;
 import com.retrieval.indexer.Token;
 import com.retrieval.indexer.basic.TokenLong;
-import com.retrieval.indexer.model.DocidNode;
+import com.retrieval.model.DocidNode;
 import com.retrieval.util.PostingList;
 import com.retrieval.util.PostingListIterator;
 
@@ -23,7 +23,7 @@ public class IndexerSection extends AbsIndexer {
 
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
-    protected IndexerSection(String name) {
+    public IndexerSection(String name) {
         super(name);
     }
 

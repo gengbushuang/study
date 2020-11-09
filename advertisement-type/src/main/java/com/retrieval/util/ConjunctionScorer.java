@@ -1,6 +1,6 @@
 package com.retrieval.util;
 
-import com.retrieval.indexer.model.DocidNode;
+import com.retrieval.model.DocidNode;
 
 import java.util.ArrayList;
 import java.util.Collections;

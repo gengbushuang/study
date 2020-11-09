@@ -1,5 +1,8 @@
 package com.retrieval.test;
 
+import com.retrieval.model.DocidNode;
+import com.retrieval.util.PostingList;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -9,88 +12,79 @@ public class RangeTree {
 
     private IntervalTree intervalTree = new IntervalTree();
 
-    private ConcurrentSkipListMap<Long, ArrayList<Integer>> table = new ConcurrentSkipListMap<>();
-    private Map<TokenRange,Integer> rmapping = new HashMap<>();
+    private ConcurrentSkipListMap<Long, PostingList<DocidNode>> table = new ConcurrentSkipListMap<>();
+    private Map<TokenRange, Boolean> rmapping = new HashMap<>();
 
-    public void build(TokenRange range,Integer id){
-//        Map<Long,Boolean> existMap = new HashMap<>();
-//        Set<TokenRange> tokenRanges = rmapping.keySet();
-//        for(TokenRange tokenRange:tokenRanges){
-//            existMap.put(tokenRange.getLeft(),Boolean.TRUE);
-//            existMap.put(tokenRange.getRight(),Boolean.TRUE);
-//        }
-
-//        Set<Long> longs = existMap.keySet();
-//        for(Long p:longs){
-//            PointInfo pp = new PointInfo(p);
-//            pointVec.add(pp);
-//        }
-//
-//        Collections.sort(pointVec, new Comparator<PointInfo>() {
-//            @Override
-//            public int compare(PointInfo o1, PointInfo o2) {
-//                return (int)(o1.getPoint()-o2.getPoint());
-//            }
-//        });
-//
-//        Map<Long,Integer> pMapIndex = new HashMap<>();
-//
-//        for(int i = 0;i<pointVec.size();i++){
-//            PointInfo p = pointVec.get(i);
-//            pMapIndex.put(p.getPoint(),i);
-//        }
-//
-//        for(Map.Entry<TokenRange, Integer> entry:rmapping.entrySet()) {
-//            TokenRange key = entry.getKey();
-//            Integer l = pMapIndex.get(key.getLeft());
-//            Integer r = pMapIndex.get(key.getRight());
-//            for (int i = l.intValue(); i < r.intValue(); i++) {
-//                pointVec.get(i).addId(entry.getValue());
-//            }
-//        }
-//            for(PointInfo info :pointVec){
-//                info.sort(new Comparator<Integer>() {
-//                    @Override
-//                    public int compare(Integer o1, Integer o2) {
-//                        return o1.intValue()-o2.intValue();
-//                    }
-//                });
-//            }
-        boolean containsKey = table.containsKey(range.getLeft());
-        if(!containsKey){
-            table.put(range.getLeft(),new ArrayList<>());
+    public void build(TokenRange range, DocidNode docidNode) {
+        if (rmapping.isEmpty()) {
+            PostingList<DocidNode> postingList = new PostingList<>();
+            postingList.add(docidNode);
+            table.put(range.getLeft(), postingList);
+            table.put(range.getRight(), new PostingList<>());
+            rmapping.put(range, Boolean.TRUE);
+            return;
         }
-
-        containsKey = table.containsKey(range.getRight());
-        if(!containsKey){
-            table.put(range.getRight(),new ArrayList<>());
-        }
-
-            for(Map.Entry<TokenRange, Integer> entry:rmapping.entrySet()) {
-                TokenRange key = entry.getKey();
-                if(key.getLeft()<range.getLeft() && key.getRight()<range.getRight()){
-
-
-
-                }else if(key.getLeft()>range.getLeft()&&key.getRight()>range.getRight()){
-
-                }else if(key.getLeft()<range.getLeft()&&key.getRight()>range.getRight()){
-
-                }else{
-                    NavigableSet<Long> navigableSet = table.subMap(range.getLeft(), range.getRight()).keySet();
-                    for(Long l:navigableSet){
-                        table.get(l).add(entry.getValue());
+        boolean isExit = true;
+        for (Map.Entry<TokenRange, Boolean> entry : rmapping.entrySet()) {
+            TokenRange key = entry.getKey();
+            if (range.getLeft() > key.getRight()) {
+                continue;
+            } else if (range.getRight() < key.getLeft()) {
+                continue;
+            } else {
+                isExit = false;
+                if (key.getLeft() < range.getLeft() && key.getRight() < range.getRight()) {
+                    //key[6-14] range[8-16] 6<8 && 14<16
+                    PostingList<DocidNode> postingList = table.get(key.getLeft());
+                    if (postingList != null) {
+                        postingList = postingList.copy();
+                    } else {
+                        postingList = new PostingList();
                     }
+                    PostingList<DocidNode> postingRange = table.get(range.getLeft());
+                    if (postingRange == null) {
+                        postingList.add(docidNode);
+                        table.put(range.getLeft(), postingList);
+                    }else{
+                        postingRange.merge(postingList);
+                    }
+                } else if (key.getLeft() > range.getLeft() && key.getRight() > range.getRight()) {
+                    //key[6-14] range[4-12] 6>4 && 14>12
+                    PostingList<DocidNode> postingRange = table.get(range.getLeft());
+                    if (postingRange == null) {
+                        postingRange = new PostingList<>();
+                        postingRange.add(docidNode);
+                        table.put(range.getLeft(), postingRange);
+                    }
+
+                    PostingList<DocidNode> postingKey = table.get(key.getLeft());
+                    if (postingKey != null) {
+                        postingKey.add(docidNode);
+                    }
+
+                } else if (key.getLeft() < range.getLeft() && key.getRight() > range.getRight()) {
+                    //key[6-14] range[8-12] 6<8 && 14>12
+
+                } else if (key.getLeft() > range.getLeft() && key.getRight() < range.getRight()) {
+                    //key[6-14] range[4-16] 6>4 && 14<16
                 }
             }
+        }
+
+        if (isExit) {
+            PostingList<DocidNode> postingList = new PostingList<>();
+            postingList.add(docidNode);
+            table.put(range.getLeft(), postingList);
+            table.put(range.getRight(), new PostingList<>());
+        }
+        rmapping.put(range, Boolean.TRUE);
     }
 
-    public void search2(long point){
-        Map.Entry<Long, ArrayList<Integer>> longArrayListEntry = table.floorEntry(point);
-        System.out.println(longArrayListEntry.getValue());
+    public void search2(long point) {
+
     }
 
-    public void search(int point){
+    public void search(int point) {
 //        int low = 0;
 //        int high = pointVec.size();
 //        for(;low<high;){
@@ -114,15 +108,19 @@ public class RangeTree {
 //        TokenRange r1 = new TokenRange("range",16,21);
 //        TokenRange r2 = new TokenRange("range",8,9);
 //        TokenRange r3 = new TokenRange("range",25,30);
-        TokenRange r4 = new TokenRange("range",5,8);
-        rangeTree.build(r4,4);
-        rangeTree.build(r4,5);
+        TokenRange r4 = new TokenRange("range", 2, 5);
+        rangeTree.build(r4, new DocidNode(1, true));
 //        TokenRange r5 = new TokenRange("range",15,23);
 //        TokenRange r6 = new TokenRange("range",17,19);
 //        TokenRange r7 = new TokenRange("range",26,26);
 //        TokenRange r8 = new TokenRange("range",0,3);
-        TokenRange r9 = new TokenRange("range",6,10);
-        rangeTree.build(r9,9);
+        TokenRange r9 = new TokenRange("range", 9, 12);
+        rangeTree.build(r9, new DocidNode(2, true));
+
+        TokenRange r10 = new TokenRange("range", 4, 10);
+        rangeTree.build(r10, new DocidNode(3, true));
+
+
 //        TokenRange r10 = new TokenRange("range",19,20);
         rangeTree.search2(9l);
 

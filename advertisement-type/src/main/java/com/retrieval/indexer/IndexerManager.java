@@ -1,6 +1,7 @@
 package com.retrieval.indexer;
 
 import com.proto.indexer.Indexer;
+import com.retrieval.util.IndexerFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -25,8 +26,10 @@ public class IndexerManager {
     public void add(Indexer.Assignment assign, long uniqueId) {
         AbsIndexer indexer = table.get(assign.getName());
         if (indexer == null) {
-            //TODO
-//            indexer = AIndexer.createIndexer(conj.getName(), conj.getValue().getType());
+            indexer = IndexerFactory.createIndexer(assign.getName());
+            if (indexer == null) {
+                return;
+            }
             indexer.add(assign.getValue(), assign.getNot(), uniqueId);
             table.put(assign.getName(), indexer);
             return;
@@ -36,10 +39,10 @@ public class IndexerManager {
 
     public void delete(Indexer.Conjunction conj, long uniqueId) {
         for (Indexer.Assignment assign : conj.getAssignmentsList()) {
-            if(!table.containsKey(assign.getName())){
+            if (!table.containsKey(assign.getName())) {
                 continue;
             }
-            table.get(assign.getName()).delete(assign.getValue(),assign.getNot(), uniqueId);
+            table.get(assign.getName()).delete(assign.getValue(), assign.getNot(), uniqueId);
         }
     }
 

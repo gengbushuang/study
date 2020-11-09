@@ -3,7 +3,7 @@ package com.retrieval.indexer.basic;
 import com.google.protobuf.ProtocolStringList;
 import com.retrieval.indexer.AbsIndexer;
 import com.retrieval.indexer.Token;
-import com.retrieval.indexer.model.DocidNode;
+import com.retrieval.model.DocidNode;
 import com.retrieval.util.PostingList;
 import com.retrieval.util.PostingListIterator;
 
@@ -17,7 +17,7 @@ public class IndexerBasic extends AbsIndexer {
 
     private ConcurrentMap<Token, PostingList<DocidNode>> table = new ConcurrentHashMap<>();
 
-    protected IndexerBasic(String name) {
+    public IndexerBasic(String name) {
         super(name);
     }
 

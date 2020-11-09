@@ -1,11 +1,23 @@
 package com.retrieval.util;
 
+import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class PostingList<T extends PostingListComparable<T>> implements PostingListIterable<T> {
 
-    private ConcurrentSkipListSet<T> skipListSet = new ConcurrentSkipListSet<>();
+    private ConcurrentSkipListSet<T> skipListSet;
 
+    public PostingList() {
+        this.skipListSet = new ConcurrentSkipListSet<>();
+    }
+
+    public PostingList(SortedSet<T> s) {
+        this.skipListSet = new ConcurrentSkipListSet<>(s);
+    }
+
+    public ConcurrentSkipListSet<T> getSkipListSet() {
+        return skipListSet;
+    }
 
     public void add(T t) {
         if (!skipListSet.add(t)) {
@@ -22,8 +34,14 @@ public class PostingList<T extends PostingListComparable<T>> implements PostingL
         skipListSet.add(t);
     }
 
-    public void merge(ConcurrentSkipListSet<T> tmp){
-        skipListSet.addAll(tmp);
+
+
+    public void merge(PostingList<T> tmp) {
+        skipListSet.addAll(tmp.getSkipListSet());
+    }
+
+    public PostingList<T> copy() {
+        return new PostingList<>(skipListSet);
     }
 
     @Override

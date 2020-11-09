@@ -1,4 +1,4 @@
-package com.retrieval.indexer.model;
+package com.retrieval.model;
 
 import com.retrieval.util.PostingListComparable;
 
