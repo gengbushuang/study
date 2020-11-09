@@ -129,11 +129,17 @@ public class IndexerSection extends AbsIndexer {
             try {
                 TokenLong tokenLong = (TokenLong) token;
                 Set<Integer> ids = search(sectionCoverIndex, tokenLong.getVal());
+                if (ids.isEmpty()) {
+                    return null;
+                }
+                PostingList<DocidNode> postingList = new PostingList<>();
                 for (Integer id : ids) {
                     PostingList<DocidNode> docidNodes = table.get(id);
-                    System.out.println(docidNodes);
-                    System.out.println("----------------------------------------");
+                    if (docidNodes != null) {
+                        postingList.merge(docidNodes);
+                    }
                 }
+                return postingList.iterator();
             } finally {
                 readWriteLock.readLock().unlock();
             }
