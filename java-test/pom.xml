@@ -30,6 +30,21 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
+
+        <!--yaml读取-->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.26</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.lvsq/jgossip -->
+        <dependency>
+            <groupId>net.lvsq</groupId>
+            <artifactId>jgossip</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
     </dependencies>
 
 </project>

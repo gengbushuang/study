@@ -28,7 +28,7 @@ public class TocketBucket {
         this.lastRefillTimestamp = System.currentTimeMillis();
     }
 
-    public synchronized boolean acquire(int numberTokens) {
+    public synchronized boolean tryAcquire(int numberTokens) {
         refill();
         if (numberTokens <= availableTokens) {
             availableTokens -= numberTokens;
@@ -55,24 +55,6 @@ public class TocketBucket {
     }
 
     public static void main(String[] args) throws InterruptedException {
-//        //每秒100次请求
-//        TocketBucket limiter = new TocketBucket(100, 0.1d);
-//        long startMillis = System.currentTimeMillis();
-//        long consumed = 0;
-//        //10秒后请求最多小于1000次
-//        while (System.currentTimeMillis() - startMillis < 10000) {
-//            if (limiter.acquire(1)) {
-//                consumed++;
-//            }
-//        }
-//        System.out.println(consumed);
 
-        TocketBucket limiter = new TocketBucket(2, 0.002d);
-        System.out.println(limiter.acquire(1));
-        Thread.sleep(2000);
-        System.out.println(limiter.acquire(1));
-        System.out.println(limiter.acquire(1));
-        System.out.println(limiter.acquire(1));
-        System.out.println(limiter.acquire(1));
     }
 }
