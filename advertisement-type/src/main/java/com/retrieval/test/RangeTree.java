@@ -16,15 +16,15 @@ public class RangeTree {
     private Map<TokenRange, Boolean> rmapping = new HashMap<>();
 
     public void build(TokenRange range, DocidNode docidNode) {
-        if (rmapping.isEmpty()) {
-            PostingList<DocidNode> postingList = new PostingList<>();
-            postingList.add(docidNode);
-            table.put(range.getLeft(), postingList);
-            table.put(range.getRight(), new PostingList<>());
-            rmapping.put(range, Boolean.TRUE);
-            return;
-        }
-        boolean isExit = true;
+//        if (rmapping.isEmpty()) {
+//            PostingList<DocidNode> postingList = new PostingList<>();
+//            postingList.add(docidNode);
+//            table.put(range.getLeft(), postingList);
+//            table.put(range.getRight(), new PostingList<>());
+//            rmapping.put(range, Boolean.TRUE);
+//            return;
+//        }
+        List<TokenRange> rangeList = new ArrayList<>();
         for (Map.Entry<TokenRange, Boolean> entry : rmapping.entrySet()) {
             TokenRange key = entry.getKey();
             if (range.getLeft() > key.getRight()) {
@@ -32,51 +32,55 @@ public class RangeTree {
             } else if (range.getRight() < key.getLeft()) {
                 continue;
             } else {
-                isExit = false;
-                if (key.getLeft() < range.getLeft() && key.getRight() < range.getRight()) {
-                    //key[6-14] range[8-16] 6<8 && 14<16
-                    PostingList<DocidNode> postingList = table.get(key.getLeft());
-                    if (postingList != null) {
-                        postingList = postingList.copy();
-                    } else {
-                        postingList = new PostingList();
-                    }
-                    PostingList<DocidNode> postingRange = table.get(range.getLeft());
-                    if (postingRange == null) {
-                        postingList.add(docidNode);
-                        table.put(range.getLeft(), postingList);
-                    }else{
-                        postingRange.merge(postingList);
-                    }
-                } else if (key.getLeft() > range.getLeft() && key.getRight() > range.getRight()) {
-                    //key[6-14] range[4-12] 6>4 && 14>12
-                    PostingList<DocidNode> postingRange = table.get(range.getLeft());
-                    if (postingRange == null) {
-                        postingRange = new PostingList<>();
-                        postingRange.add(docidNode);
-                        table.put(range.getLeft(), postingRange);
-                    }
-
-                    PostingList<DocidNode> postingKey = table.get(key.getLeft());
-                    if (postingKey != null) {
-                        postingKey.add(docidNode);
-                    }
-
-                } else if (key.getLeft() < range.getLeft() && key.getRight() > range.getRight()) {
-                    //key[6-14] range[8-12] 6<8 && 14>12
-
-                } else if (key.getLeft() > range.getLeft() && key.getRight() < range.getRight()) {
-                    //key[6-14] range[4-16] 6>4 && 14<16
-                }
+                rangeList.add(key);
+//                if (key.getLeft() < range.getLeft() && key.getRight() < range.getRight()) {
+//                    //key[6-14] range[8-16] 6<8 && 14<16
+//                    PostingList<DocidNode> postingList = table.get(key.getLeft());
+//                    if (postingList != null) {
+//                        postingList = postingList.copy();
+//                    } else {
+//                        postingList = new PostingList();
+//                    }
+//                    PostingList<DocidNode> postingRange = table.get(range.getLeft());
+//                    if (postingRange == null) {
+//                        postingList.add(docidNode);
+//                        table.put(range.getLeft(), postingList);
+//                    }else{
+//                        postingRange.merge(postingList);
+//                    }
+//                } else if (key.getLeft() > range.getLeft() && key.getRight() > range.getRight()) {
+//                    //key[6-14] range[4-12] 6>4 && 14>12
+//                    PostingList<DocidNode> postingRange = table.get(range.getLeft());
+//                    if (postingRange == null) {
+//                        postingRange = new PostingList<>();
+//                        postingRange.add(docidNode);
+//                        table.put(range.getLeft(), postingRange);
+//                    }
+//
+//                    PostingList<DocidNode> postingKey = table.get(key.getLeft());
+//                    if (postingKey != null) {
+//                        postingKey.add(docidNode);
+//                    }
+//
+//                } else if (key.getLeft() < range.getLeft() && key.getRight() > range.getRight()) {
+//                    //key[6-14] range[8-12] 6<8 && 14>12
+//
+//                } else if (key.getLeft() > range.getLeft() && key.getRight() < range.getRight()) {
+//                    //key[6-14] range[4-16] 6>4 && 14<16
+//                }
             }
         }
 
-        if (isExit) {
+        if (rangeList.isEmpty()) {
             PostingList<DocidNode> postingList = new PostingList<>();
             postingList.add(docidNode);
             table.put(range.getLeft(), postingList);
             table.put(range.getRight(), new PostingList<>());
+        } else {
+
+
         }
+
         rmapping.put(range, Boolean.TRUE);
     }
 

@@ -216,9 +216,9 @@ public class HWMGraphTest {
                 pair = createSmallestSetForSingleValueDim(entry.getKey(), entry.getValue());
             }
 
-            smallestSets.add(new SmallestSet(entry.getKey(), pair.left));
+            smallestSets.add(new SmallestSet(entry.getKey(), pair.getLeft()));
 
-            simpleTagSet.put(entry.getKey(), pair.right);
+            simpleTagSet.put(entry.getKey(), pair.getRight());
         }
 
         return smallestSets;
