@@ -107,7 +107,7 @@ public final class Producer extends Kafkas {
         } else {
             try {
                 producer.send(new ProducerRecord<>(topic, key, value)).get();
-                System.out.println("Sent message: (" + key.toString() + ", " + value + ")");
+                System.out.println("--------->Sent message: (" + key.toString() + ", " + value + ")");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {

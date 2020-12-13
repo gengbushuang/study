@@ -4,10 +4,11 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.PartitionInfo;
+import org.apache.kafka.common.TopicPartition;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public final class Consumer extends Kafkas {
     private final String topic;
@@ -20,16 +21,64 @@ public final class Consumer extends Kafkas {
         this.consumer = new KafkaConsumer<>(builder.props);
     }
 
+    public Map<TopicPartition, Long> getFromOffset() {
+
+        return Collections.EMPTY_MAP;
+    }
+
+    public void testShowTopicInfo() {
+        Map<String, List<PartitionInfo>> mapListTopics = consumer.listTopics();
+        Collection<List<PartitionInfo>> listCollection = mapListTopics.values();
+        for (List<PartitionInfo> partitionInfos : listCollection) {
+            for (PartitionInfo partitionInfo : partitionInfos) {
+                TopicPartition topicPartition = new TopicPartition(partitionInfo.topic(), partitionInfo.partition());
+                System.out.println(topicPartition);
+                Map<TopicPartition, Long> mapBeginningOffsets = consumer.beginningOffsets(Collections.singletonList(topicPartition));
+                System.out.println("mapBeginningOffsets--->" + mapBeginningOffsets);
+                Map<TopicPartition, Long> mapEndOffsets = consumer.endOffsets(Collections.singletonList(topicPartition));
+                System.out.println("mapEndOffsets--->" + mapEndOffsets);
+            }
+        }
+    }
+
+
     public void run() {
         consumer.subscribe(Collections.singletonList(this.topic));
-//        while (true) {
-        try {
-            ConsumerRecords<Integer, String> records = consumer.poll(Duration.ofSeconds(1));
-            for (ConsumerRecord<Integer, String> record : records) {
-                System.out.println("Received message: (" + record.partition() + "," + record.key() + ", " + record.value() + ") at offset " + record.offset());
+
+        Set<TopicPartition> assignment = new HashSet<>();
+        while (assignment.size() == 0) {
+            consumer.poll(Duration.ofSeconds(1));
+            assignment = consumer.assignment();
+        }
+
+        Map<TopicPartition, Long> fromOffset = getFromOffset();
+
+        for (TopicPartition tp : assignment) {
+            Long offset = fromOffset.get(tp);
+            if (offset == null) {
+                continue;
             }
-            //异步提交
-            consumer.commitAsync();
+            long kafkaOffset = consumer.position(tp);
+            if (kafkaOffset > offset.intValue()) {
+                System.out.println("分区 " + tp + " 从 " + offset.longValue() + " 开始消费");
+                consumer.seek(tp, offset.longValue());
+            }
+        }
+
+
+        try {
+            while (true) {
+                ConsumerRecords<Integer, String> records = consumer.poll(Duration.ofSeconds(1));
+                if (records.isEmpty()) {
+                    Thread.sleep(2000);
+                    continue;
+                }
+                for (ConsumerRecord<Integer, String> record : records) {
+                    System.out.println("------>Received message: (" + record.partition() + "," + record.key() + ", " + record.value() + ") at offset " + record.offset());
+                }
+                //异步提交
+                consumer.commitAsync();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -39,7 +88,7 @@ public final class Consumer extends Kafkas {
                 e.printStackTrace();
             }
         }
-//        }
+
     }
 
     public void close() {

@@ -1,9 +1,13 @@
 package kafka;
 
 import kafka.Consumer;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.PartitionInfo;
+import org.apache.kafka.common.TopicPartition;
 import org.junit.Test;
 
-import java.util.Properties;
+import java.time.Duration;
+import java.util.*;
 
 public class ConsumerTest {
 
@@ -20,6 +24,10 @@ public class ConsumerTest {
                 .keyDeserializer("org.apache.kafka.common.serialization.IntegerDeserializer")
                 .valueDeserializer("org.apache.kafka.common.serialization.StringDeserializer")
                 .build();
+
+
+
+//        consumer.testShowTopicInfo();
 
         consumer.run();
         consumer.close();
