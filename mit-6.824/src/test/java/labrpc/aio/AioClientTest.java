@@ -20,6 +20,7 @@ public class AioClientTest {
             ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length + 4);
             byteBuffer.putInt(bytes.length);
             byteBuffer.put(bytes);
+
             byte[] array = byteBuffer.array();
             CompletableFuture<byte[]> future = client.send(array);
             byte[] rep = future.get();

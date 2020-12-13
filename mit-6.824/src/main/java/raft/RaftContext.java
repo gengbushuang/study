@@ -10,9 +10,21 @@ public class RaftContext {
 
     private RpcClientFactory rpcClientFactory;
 
-    public RaftContext(RaftOptions raftOptions, RpcClientFactory rpcClientFactory, ScheduledThreadPoolExecutor scheduledExecutor) {
+    private ClusterConfiguration configuration;
+
+    private int sid;
+
+    public RaftContext(int sid,RaftOptions raftOptions,ClusterConfiguration configuration, RpcClientFactory rpcClientFactory) {
+        this(sid,raftOptions,configuration, rpcClientFactory, null);
+    }
+
+    public RaftContext(int sid,RaftOptions raftOptions,ClusterConfiguration configuration, RpcClientFactory rpcClientFactory, ScheduledThreadPoolExecutor scheduledExecutor) {
+        this.sid = sid;
         this.rpcClientFactory = rpcClientFactory;
         this.scheduledExecutor = scheduledExecutor;
+
+        this.configuration = configuration;
+
         if (this.scheduledExecutor == null) {
             this.scheduledExecutor = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
         }
@@ -36,5 +48,13 @@ public class RaftContext {
 
     public RpcClientFactory getRpcClientFactory() {
         return rpcClientFactory;
+    }
+
+    public ClusterConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    public int getSid() {
+        return sid;
     }
 }

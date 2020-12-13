@@ -14,7 +14,6 @@ public class RpcClientTest {
         for(;;) {
             RequestVoteRequest voteRequest = new RequestVoteRequest();
             voteRequest.setTerm(1);
-            voteRequest.setServerId(2);
             voteRequest.setLastLogIndex(3);
             voteRequest.setLastLogTerm(5);
             try {

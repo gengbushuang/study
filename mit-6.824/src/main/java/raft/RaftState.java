@@ -2,23 +2,23 @@ package raft;
 
 public class RaftState {
 
-    private long term;
+    private int term;
 
-    private long votedFor;
+    private int votedFor;
 
-    public long getTerm() {
+    public int getTerm() {
         return term;
     }
 
-    public void setTerm(long term) {
+    public void setTerm(int term) {
         this.term = term;
     }
 
-    public long getVotedFor() {
+    public int getVotedFor() {
         return votedFor;
     }
 
-    public void setVotedFor(long votedFor) {
+    public void setVotedFor(int votedFor) {
         this.votedFor = votedFor;
     }
 }

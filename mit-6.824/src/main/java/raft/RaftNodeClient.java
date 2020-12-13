@@ -4,9 +4,7 @@ import labrpc.impl.RpcClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class RaftNodeClient {
 
@@ -18,7 +16,8 @@ public class RaftNodeClient {
 
     private int serviceId;
 
-    public RaftNodeClient(String endpoint, RaftContext raftContext) {
+    public RaftNodeClient(int sid, String endpoint, RaftContext raftContext) {
+        this.serviceId = sid;
         this.rpcClient = raftContext.getRpcClientFactory().createRpcClient(endpoint);
         this.proxy = this.rpcClient.getProxy(RaftNodeService.class);
     }

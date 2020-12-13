@@ -2,11 +2,10 @@ package raft;
 
 import raft.message.request.AppendEntriesRequest;
 import raft.message.response.AppendEntriesResponse;
-import raft.t.ServerRole;
 
 public interface RaftNode {
 
-    public long getTerm();
+    public int getTerm();
 
     public void setLeaderId(int id);
 
@@ -16,9 +15,9 @@ public interface RaftNode {
 
     public ServerRole getRole();
 
-    void updateTerm(long term);
+    void updateTerm(int term);
 
-    void updateVoteFor(long serverId);
+    void updateVoteFor(int serverId);
 
     void resetElection();
 
@@ -26,5 +25,9 @@ public interface RaftNode {
 
     void becomeLeader();
 
+    boolean compareLog(int lastLogTerm, int lastLogIndex);
+
     AppendEntriesResponse handleAppendEntriesRequest(AppendEntriesRequest appendEntriesRequest);
+
+
 }

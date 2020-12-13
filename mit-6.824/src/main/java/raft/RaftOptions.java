@@ -6,7 +6,7 @@ public class RaftOptions {
     private int electionTimeoutUpperBound;
     //选举时间下界,最小时间
     private int electionTimeoutLowerBound;
-
+    //领导者发送的日志心跳时间
     private int heartbeatInterval;
 
     public int getElectionTimeoutUpperBound() {

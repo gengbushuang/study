@@ -2,7 +2,6 @@ package labrpc;
 
 import labrpc.impl.RpcServer;
 import raft.RaftNodeService;
-import raft.RaftNodeServiceImpl;
 import raft.message.request.AppendEntriesRequest;
 import raft.message.request.RequestVoteRequest;
 import raft.message.response.AppendEntriesResponse;

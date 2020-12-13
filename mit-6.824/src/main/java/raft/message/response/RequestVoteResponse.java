@@ -6,7 +6,7 @@ public class RequestVoteResponse {
     //目的
     private int destination;
 
-    private long term;
+    private int term;
 
     private boolean granted;
 
@@ -28,11 +28,11 @@ public class RequestVoteResponse {
         this.destination = destination;
     }
 
-    public long getTerm() {
+    public int getTerm() {
         return term;
     }
 
-    public void setTerm(long term) {
+    public void setTerm(int term) {
         this.term = term;
     }
 

@@ -1,20 +1,22 @@
 package raft.message.request;
 
+import raft.message.Entry;
+
 public class AppendEntriesRequest {
     //来源
     private int source;
     //目的
     private int destination;
 
-    private long term;
+    private int term;
 
-    private long prevLogIndex;
+    private int prevLogIndex;
 
-    private long prevLogTerm;
+    private int prevLogTerm;
 
     private Entry entry;
 
-    private long commitIndex;
+    private int commitIndex;
 
     public int getSource() {
         return source;
@@ -32,27 +34,27 @@ public class AppendEntriesRequest {
         this.destination = destination;
     }
 
-    public long getTerm() {
+    public int getTerm() {
         return term;
     }
 
-    public void setTerm(long term) {
+    public void setTerm(int term) {
         this.term = term;
     }
 
-    public long getPrevLogIndex() {
+    public int getPrevLogIndex() {
         return prevLogIndex;
     }
 
-    public void setPrevLogIndex(long prevLogIndex) {
+    public void setPrevLogIndex(int prevLogIndex) {
         this.prevLogIndex = prevLogIndex;
     }
 
-    public long getPrevLogTerm() {
+    public int getPrevLogTerm() {
         return prevLogTerm;
     }
 
-    public void setPrevLogTerm(long prevLogTerm) {
+    public void setPrevLogTerm(int prevLogTerm) {
         this.prevLogTerm = prevLogTerm;
     }
 
@@ -64,11 +66,11 @@ public class AppendEntriesRequest {
         this.entry = entry;
     }
 
-    public long getCommitIndex() {
+    public int getCommitIndex() {
         return commitIndex;
     }
 
-    public void setCommitIndex(long commitIndex) {
+    public void setCommitIndex(int commitIndex) {
         this.commitIndex = commitIndex;
     }
 

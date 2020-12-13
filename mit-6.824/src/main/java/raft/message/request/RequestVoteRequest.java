@@ -6,11 +6,11 @@ public class RequestVoteRequest {
     //目的
     private int destination;
 
-    private long term;
+    private int term;
 
-    private long lastLogTerm;
+    private int lastLogTerm;
 
-    private long lastLogIndex;
+    private int lastLogIndex;
 
     public int getSource() {
         return source;
@@ -28,27 +28,27 @@ public class RequestVoteRequest {
         this.destination = destination;
     }
 
-    public long getTerm() {
+    public int getTerm() {
         return term;
     }
 
-    public void setTerm(long term) {
+    public void setTerm(int term) {
         this.term = term;
     }
 
-    public long getLastLogTerm() {
+    public int getLastLogTerm() {
         return lastLogTerm;
     }
 
-    public void setLastLogTerm(long lastLogTerm) {
+    public void setLastLogTerm(int lastLogTerm) {
         this.lastLogTerm = lastLogTerm;
     }
 
-    public long getLastLogIndex() {
+    public int getLastLogIndex() {
         return lastLogIndex;
     }
 
-    public void setLastLogIndex(long lastLogIndex) {
+    public void setLastLogIndex(int lastLogIndex) {
         this.lastLogIndex = lastLogIndex;
     }
 

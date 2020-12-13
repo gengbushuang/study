@@ -7,11 +7,11 @@ public class AppendEntriesResponse {
     //目的
     private int destination;
 
-    private long term;
+    private int term;
 
     private boolean success;
 
-    private long lastLogIndex;
+    private int lastLogIndex;
 
     public int getSource() {
         return source;
@@ -29,11 +29,11 @@ public class AppendEntriesResponse {
         this.destination = destination;
     }
 
-    public long getTerm() {
+    public int getTerm() {
         return term;
     }
 
-    public void setTerm(long term) {
+    public void setTerm(int term) {
         this.term = term;
     }
 
@@ -49,7 +49,7 @@ public class AppendEntriesResponse {
         return lastLogIndex;
     }
 
-    public void setLastLogIndex(long lastLogIndex) {
+    public void setLastLogIndex(int lastLogIndex) {
         this.lastLogIndex = lastLogIndex;
     }
 
