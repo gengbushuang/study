@@ -21,6 +21,7 @@
         <module>java-jemalloc</module>
         <module>java-ast</module>
         <module>java-annotation</module>
+        <module>compile-test</module>
     </modules>
 
     <dependencies>
