@@ -18,11 +18,50 @@
         <module>protobuf-test</module>
         <module>distributed-transaction</module>
         <module>json-test</module>
-        <module>java-jemalloc</module>
-        <module>java-ast</module>
-        <module>java-annotation</module>
+        <module>elasticsearch-test</module>
+        <module>advertisement-type</module>
+        <module>calcite-test</module>
+        <module>kafka-test</module>
+        <module>java-test</module>
+        <module>netty-test</module>
+        <module>redis-test</module>
+        <module>id-generation</module>
         <module>compile-test</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>2.8.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>2.8.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.12</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.9</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -31,6 +70,21 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <!-- 日志 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
