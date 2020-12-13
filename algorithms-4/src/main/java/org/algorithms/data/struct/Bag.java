@@ -1,6 +1,7 @@
 package org.algorithms.data.struct;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
@@ -56,16 +57,23 @@ public class Bag<Item> implements Iterable<Item> {
 
     @Override
     public Iterator<Item> iterator() {
-        return null;
+        return new BagArrayIterator();
     }
 
-    @Override
-    public void forEach(Consumer<? super Item> action) {
+    private class BagArrayIterator implements Iterator<Item> {
+        private int i = 0;
 
-    }
+        @Override
+        public boolean hasNext() {
+            return i < size;
+        }
 
-    @Override
-    public Spliterator<Item> spliterator() {
-        return null;
+        @Override
+        public Item next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            return items[i++];
+        }
     }
 }

@@ -61,7 +61,7 @@ public class QuickSort {
 
     public void qsort4(int[] a, int left, int right) {
         //判断还剩多少长度数组改用插入排序
-        if (right - left < 100) {
+        if (right - left < 5) {
             insertionSort(a, left, right + 1);
             return;
         }
@@ -94,10 +94,7 @@ public class QuickSort {
 
     void insertionSort(int[] a, int left, int right) {
         for (int i = left + 1; i < right; i++) {
-            for (int j = i; j > left; j--) {
-                if (a[j - 1] < a[j]) {
-                    break;
-                }
+            for (int j = i; j > left && a[j - 1] > a[j]; j--) {
                 swap(a, j - 1, j);
             }
         }
@@ -111,14 +108,14 @@ public class QuickSort {
 
     public static void main(String[] args) {
         java.util.Random random = new Random();
-        int n = 10000;
+        int n = 50;
         int[] a = new int[n];
         for (int j = 0; j < n; j++) {
-            a[j] = random.nextInt();
+            a[j] = random.nextInt(5000);
         }
 
         new QuickSort().qsort4(a, 0, a.length - 1);
-//        System.out.println(Arrays.toString(a));
+        System.out.println(Arrays.toString(a));
 //        new QuickSort().insertionSort(a, 0, a.length);
     }
 }

@@ -52,10 +52,10 @@ public class SortCompare {
 	}
 
 	public static void main(String[] args) {
-		String alg1 = "Merage";
-		String alg2 = "Quick";
-		int n = 100000;
-		int t = 100;
+		String alg1 = "Insertion";
+		String alg2 = "Selection";
+		int n = 1000;
+		int t = 10;
 		double t1 = timeRandomInput(alg1, n, t);
 		double t2 = timeRandomInput(alg2, n, t);
 		System.out.println(t1+","+t2);

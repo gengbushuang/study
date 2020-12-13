@@ -2,9 +2,9 @@ package org.algorithms.char4;
 
 public class DegreesOfSeparation {
 	public static void main(String[] args) {
-		SymbolGraph symbolGraph = new SymbolGraph("graph/movies.txt", "/");
+		SymbolGraph symbolGraph = new SymbolGraph("graph/routes.txt", " ");
 		Graph graph = symbolGraph.g();
-		String source = "Animal House (1978)";
+		String source = "JFK";
 		if (!symbolGraph.contains(source)) {
 			System.out.println(source + " not in database.");
 			return;
@@ -13,7 +13,7 @@ public class DegreesOfSeparation {
 		int s = symbolGraph.index(source);
 		BreadthFirstPaths bfs = new BreadthFirstPaths(graph, s);
 
-		String sink = "Titanic (1997)";
+		String sink = "HOU";
 		System.out.println(sink);
 		if (symbolGraph.contains(sink)) {
 			int t = symbolGraph.index(sink);

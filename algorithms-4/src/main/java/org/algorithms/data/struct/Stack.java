@@ -36,7 +36,8 @@ public class Stack<Item> implements Iterable<Item> {
         if (this.size == items.length) {
             resize(this.size * 2);
         }
-        this.items[size++] = item;
+        this.items[size] = item;
+        size += 1;
     }
 
     /**
@@ -48,10 +49,11 @@ public class Stack<Item> implements Iterable<Item> {
         if (isEmpty()) {
             throw new NoSuchElementException();
         }
-        if(this.size==items.length/4){
+        if (this.size == items.length / 4) {
             resize(this.size);
         }
-        Item item = this.items[size--];
+        size -= 1;
+        Item item = this.items[size];
         this.items[size] = null;
         return item;
     }

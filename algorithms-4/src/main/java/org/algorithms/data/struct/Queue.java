@@ -35,6 +35,10 @@ public class Queue<Item> implements Iterable<Item> {
      * @param item
      */
     public void enqueue(Item item) {
+        if(size==items.length){
+            resize(size<<1);
+        }
+
         if (head == items.length) {
             head = 0;
         }
@@ -51,6 +55,7 @@ public class Queue<Item> implements Iterable<Item> {
         if (tail == items.length) {
             tail = 0;
         }
+
         Item item = this.items[tail];
         this.items[tail] = null;
         tail++;

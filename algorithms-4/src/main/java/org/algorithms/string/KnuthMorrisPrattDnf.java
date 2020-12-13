@@ -44,4 +44,13 @@ public class KnuthMorrisPrattDnf extends StringMatching {
         }
         return -1;
     }
+
+    public static void main(String[] args) {
+        String str = "AABRAACADABRAACAADABRA";
+        String parent = "AACAA";
+        KnuthMorrisPrattDnf dnf = new KnuthMorrisPrattDnf(parent);
+
+        int i = dnf.indexOf(str);
+        System.out.println(i);
+    }
 }
