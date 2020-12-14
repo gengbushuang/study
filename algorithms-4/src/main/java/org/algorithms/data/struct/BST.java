@@ -339,6 +339,20 @@ public class BST<K extends Comparable<K>, V> {
     }
 
 
+    public int maxDepth() {
+
+        return maxDepth(root,0);
+    }
+
+    private int maxDepth(Node node, int depth) {
+        if(node==null){
+            return depth;
+        }
+        int maxLeft = maxDepth(node.left,depth+1);
+        int maxRight =maxDepth(node.right,depth+1);
+        return Math.max(maxLeft,maxRight);
+    }
+
 
     public static void main(String[] args) {
         BST<String,String> bst = new BST<String,String>();
@@ -352,7 +366,8 @@ public class BST<K extends Comparable<K>, V> {
         bst.put("M","m");
 //        bst.put("Y","y");bst.put("Z","z");
 //        bst.show();
-        bst.showPostorderTraversal();
+        int i = bst.maxDepth();
+        System.out.println(i);
         //bst.delete("E");
     }
 }
