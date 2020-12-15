@@ -1,8 +1,6 @@
 package org.algorithms.data.struct;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 public class BST<K extends Comparable<K>, V> {
 
@@ -203,7 +201,7 @@ public class BST<K extends Comparable<K>, V> {
     }
 
     public void delete(K k){
-        delete(root,k);
+        delete(root, k);
     }
 
     private Node delete(Node node, K k) {
@@ -350,7 +348,41 @@ public class BST<K extends Comparable<K>, V> {
         }
         int maxLeft = maxDepth(node.left,depth+1);
         int maxRight =maxDepth(node.right,depth+1);
-        return Math.max(maxLeft,maxRight);
+        return Math.max(maxLeft, maxRight);
+    }
+
+    /**
+     * 层序遍历就是逐层遍历树结构
+     */
+    public void showLevelOrder() {
+        Queue<Node> queue = new Queue<>();
+        List<List<Node>> listList = new ArrayList<>();
+        queue.enqueue(root);
+        Node node;
+        while (!queue.isEmpty()){
+            //node = queue.dequeue();
+            //System.out.println(node);
+//            if(node.left!=null){
+//                queue.enqueue(node.left);
+//            }
+//            if(node.right!=null){
+//                queue.enqueue(node.right);
+//            }
+
+            List<Node> lists = new ArrayList<>();
+            for(int i =0;i<queue.size();i++){
+                node = queue.dequeue();
+                lists.add(node);
+                if(node.left!=null){
+                    queue.enqueue(node.left);
+                }
+                if(node.right!=null){
+                    queue.enqueue(node.right);
+                }
+            }
+            listList.add(lists);
+        }
+        System.out.println(listList);
     }
 
 
