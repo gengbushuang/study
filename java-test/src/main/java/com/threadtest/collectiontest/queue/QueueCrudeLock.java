@@ -13,30 +13,16 @@ public class QueueCrudeLock<Item extends Comparable<Item>> {
 
     private Lock lock = new ReentrantLock();
 
-//    private AtomicBoolean initHead = new AtomicBoolean(false);
-
     public QueueCrudeLock() {
-
+        //初始化一个头信息，不用添加的时候初始化
+        head = new Node<>(null, null);
     }
 
 
     public boolean add(Item item) {
-        Node prev = null;
-//        Node curr = head;
-//        while (curr == null) {
-//            if (initHead.get()) {
-//                Thread.yield();
-//            } else if (initHead.compareAndSet(false, true)) {
-//                head = new Node<>(item, curr);
-//                return true;
-//            }
-//        }
+        Node prev = head;
+        Node curr = head.next;
         lock.lock();
-        Node curr = head;
-        if (curr == null) {
-            head = new Node<>(item, curr);
-            return true;
-        }
         try {
             while (curr != null && curr.less(item) < 0) {
                 prev = curr;
@@ -55,12 +41,9 @@ public class QueueCrudeLock<Item extends Comparable<Item>> {
     }
 
     public boolean remove(Item item) {
-        Node prev = null;
+        Node prev = head;
+        Node curr = head.next;
         lock.lock();
-        Node curr = head;
-        if (curr == null) {
-            return false;
-        }
         try {
             while (curr != null && curr.less(item) < 0) {
                 prev = curr;
@@ -68,19 +51,9 @@ public class QueueCrudeLock<Item extends Comparable<Item>> {
             }
 
             if (curr != null && curr.less(item) == 0) {
-                if (prev == null) {
-                    head = curr.next;
-                } else {
-                    prev.next = curr.next;
-                }
-//                while (head==null){
-//                    if(initHead.compareAndSet(true,false)){
-//                        break;
-//                    }
-//                }
+                prev.next = curr.next;
                 return true;
             }
-
             return false;
 
         } finally {
@@ -101,18 +74,6 @@ public class QueueCrudeLock<Item extends Comparable<Item>> {
             return item.compareTo(o);
         }
 
-    }
-
-
-    public static void main(String[] args) {
-        QueueCrudeLock<Integer> queueCrudeLock = new QueueCrudeLock();
-
-        queueCrudeLock.add(2);
-//        queueCrudeLock.add(6);
-//        queueCrudeLock.add(8);
-//        queueCrudeLock.add(4);
-
-        queueCrudeLock.remove(2);
     }
 
 }
