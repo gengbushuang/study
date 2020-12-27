@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 粗粒度锁队列
  */
-public class QueueCrudeLock<Item extends Comparable<Item>> {
+public class QueueCrudeLock<Item extends Comparable<Item>> extends AbstractQueue<Item> {
 
     private Node<Item> head;
 
@@ -19,6 +19,7 @@ public class QueueCrudeLock<Item extends Comparable<Item>> {
     }
 
 
+    @Override
     public boolean add(Item item) {
         Node prev = head;
         Node curr = head.next;
@@ -40,7 +41,9 @@ public class QueueCrudeLock<Item extends Comparable<Item>> {
 
     }
 
-    public boolean remove(Item item) {
+    @Override
+    public boolean remove(Object o) {
+        Comparable<Item> item = (Comparable<Item>) o;
         Node prev = head;
         Node curr = head.next;
         lock.lock();

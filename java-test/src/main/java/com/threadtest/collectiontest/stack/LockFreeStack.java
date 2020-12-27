@@ -1,11 +1,13 @@
-package com.threadtest.collectiontest;
+package com.threadtest.collectiontest.stack;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class lockFreeStack<Item> {
+public class LockFreeStack<Item> extends AbstractDeque<Item> {
     //表示栈顶
+    //只要保证栈顶的引用正确
     AtomicReference<Node<Item>> top = new AtomicReference<>();
 
+    @Override
     public void push(Item item) {
         Node newNode = new Node(item);
         Node<Item> oldNode;
@@ -15,6 +17,7 @@ public class lockFreeStack<Item> {
         } while (!top.compareAndSet(oldNode, newNode));
     }
 
+    @Override
     public Item pop() {
         Node<Item> prevNode;
         Node<Item> nextNode;

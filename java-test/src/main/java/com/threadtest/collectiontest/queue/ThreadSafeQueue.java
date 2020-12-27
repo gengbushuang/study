@@ -14,7 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class ThreadSafeQueue<T> implements Queue<T> {
+public class ThreadSafeQueue<T> extends AbstractQueue<T> {
 
     private final Logger log = LogManager.getLogger(this.getClass());
     //入队锁
@@ -45,21 +45,6 @@ public class ThreadSafeQueue<T> implements Queue<T> {
         this.size = new AtomicInteger(0);
 
         this.capacity = cap;
-    }
-
-
-    private class Node<T> {
-        T item;
-        volatile Node<T> next;
-
-        Node(T item) {
-            this.item = item;
-            this.next = null;
-        }
-
-        public T getItem() {
-            return item;
-        }
     }
 
     @Override
@@ -143,105 +128,17 @@ public class ThreadSafeQueue<T> implements Queue<T> {
         return result;
     }
 
-    @Override
-    public int size() {
-        return 0;
-    }
+    private class Node<T> {
+        T item;
+        volatile Node<T> next;
 
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
+        Node(T item) {
+            this.item = item;
+            this.next = null;
+        }
 
-
-    @Override
-    public boolean add(T t) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public T remove() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public T element() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public T peek() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean removeIf(Predicate<? super T> filter) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Spliterator<T> spliterator() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Stream<T> stream() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Stream<T> parallelStream() {
-        throw new UnsupportedOperationException();
-    }
-
-
-    @Override
-    public boolean contains(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Object[] toArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <T1> T1[] toArray(T1[] a) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean containsAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends T> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException();
+        public T getItem() {
+            return item;
+        }
     }
 }

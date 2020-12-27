@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 细粒度锁队列
  */
-public class QueueFineLock<Item extends Comparable<Item>> {
+public class QueueFineLock<Item extends Comparable<Item>> extends AbstractQueue<Item> {
 
     private Node<Item> head;
 
@@ -15,6 +15,7 @@ public class QueueFineLock<Item extends Comparable<Item>> {
         head = new Node<>(null, null);
     }
 
+    @Override
     public boolean add(Item item) {
         //例如数据,A,B,C,D
         //A加锁
@@ -56,7 +57,9 @@ public class QueueFineLock<Item extends Comparable<Item>> {
         }
     }
 
-    public boolean remove(Item item) {
+    @Override
+    public boolean remove(Object o) {
+        Comparable<Item> item = (Comparable<Item>) o;
         //例如数据,A,B,C,D
         //A加锁
         head.lock();
@@ -91,7 +94,6 @@ public class QueueFineLock<Item extends Comparable<Item>> {
             prev.unlock();
         }
     }
-
 
     private class Node<Item extends Comparable<Item>> {
         Item item;
