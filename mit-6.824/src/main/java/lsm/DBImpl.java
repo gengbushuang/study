@@ -7,11 +7,11 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 public class DBImpl<K, V> implements DB<K, V>, Closeable {
 
+    private MemTable memTable;
 
-    private final ConcurrentSkipListMap<K, V> map;
 
     public DBImpl(Comparator<K> comparator) {
-        map = new ConcurrentSkipListMap(comparator);
+        this.memTable = new MemTable(comparator);
     }
 
     @Override
