@@ -1,6 +1,5 @@
 package com.test.calcatetest;
 
-import com.test.calcate.rel.TestRel;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitSet;
@@ -112,13 +111,13 @@ public class TestMerge {
         VolcanoPlanner volcanoPlanner = new VolcanoPlanner();
         RelOptCluster relOptCluster = RelOptCluster.create(volcanoPlanner, new RexBuilder(new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT)));
         relOptCluster.setMetadataProvider(DefaultRelMetadataProvider.INSTANCE);
-        RelTraitSet desiredTraits = relOptCluster.traitSetOf(TestRel.CONVENTION);
+//        RelTraitSet desiredTraits = relOptCluster.traitSetOf(TestRel.CONVENTION);
 
 
         RelNode relNode = root.rel;
-        if (!relNode.getTraitSet().equals(desiredTraits)) {
-            relNode = volcanoPlanner.changeTraits(relNode, desiredTraits);
-        }
+//        if (!relNode.getTraitSet().equals(desiredTraits)) {
+//            relNode = volcanoPlanner.changeTraits(relNode, desiredTraits);
+//        }
         volcanoPlanner.setRoot(relNode);
         RelNode finalNode = volcanoPlanner.findBestExp();
         System.out.println(RelOptUtil.toString(finalNode, SqlExplainLevel.ALL_ATTRIBUTES));

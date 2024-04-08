@@ -1,5 +1,6 @@
 package com.retrieval.indexer.basic;
 
+//import com.google.protobuf.ProtocolStringList;
 import com.google.protobuf.ProtocolStringList;
 import com.retrieval.indexer.AbsIndexer;
 import com.retrieval.indexer.Token;
@@ -30,6 +31,7 @@ public class IndexerBasic extends AbsIndexer {
         for (Token token : tokens) {
             this.add(token, isNot, uniqueId);
         }
+
     }
 
     @Override

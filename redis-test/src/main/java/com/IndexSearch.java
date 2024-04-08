@@ -1,5 +1,6 @@
 package com;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class IndexSearch {
@@ -26,7 +27,8 @@ public class IndexSearch {
     }
 
     public static void main(String[] args) {
-        int [] a = {1,2,3,4,4,4,4,7,8,9,11};
-        int search = new IndexSearch().search(9, a);
+       Object  arrayList = new ArrayList();
+
+       System.out.println(arrayList.toString().trim());
     }
 }

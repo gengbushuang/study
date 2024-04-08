@@ -2,6 +2,7 @@ package org.algorithms.char1;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * 链表队列
@@ -19,24 +20,34 @@ public class LinkedQueue<T> implements Iterable<T> {
 	private int n;
 
 	private class Node {
+
 		private T item;
 		private Node next;
+
+		Node(T t){
+			this.item = t;
+		}
 	}
 
-	public LinkedQueue() {
+	public LinkedQueue(T t) {
+		first = new Node(t);
+		this.last = first;
 		this.n = 0;
 	}
 
 	public void enqueue(T t) {
 		Node oldLast = last;
-		last = new Node();
-		last.item = t;
+		last = new Node(t);
 		if (first == null) {
 			first = last;
 		} else {
 			oldLast.next = last;
 		}
 		n++;
+
+		while (n > 5) {
+			dequeue();
+		}
 	}
 
 	public T dequeue() {
@@ -44,9 +55,12 @@ public class LinkedQueue<T> implements Iterable<T> {
 		if (isEmpty()) {
 			return null;
 		}
-		
-		T tmp = first.item;
-		first = first.next;
+		Node next = first.next;
+		T tmp = next.item;
+		Node next1 = next.next;
+		first.next = next1;
+//		T tmp = first.item;
+//		first = first.next;
 		if (isEmpty()) {
 			last = null;
 			return null;
@@ -94,7 +108,7 @@ public class LinkedQueue<T> implements Iterable<T> {
 	}
 
 	public static void main(String[] args) {
-		LinkedQueue<String> queue = new LinkedQueue<>();
+		LinkedQueue<String> queue = new LinkedQueue<>("中");
 		String itemStr = "to be or not to - be - - that - - - is";
 		String[] items = itemStr.split(" ");
 		for (String item : items) {

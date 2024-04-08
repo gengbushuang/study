@@ -1,6 +1,5 @@
 package com.ratelimiter.rule;
 
-import sun.text.normalizer.Trie;
 
 import java.util.HashMap;
 import java.util.List;

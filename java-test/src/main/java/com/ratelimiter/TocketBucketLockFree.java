@@ -1,5 +1,8 @@
 package com.ratelimiter;
 
+import java.lang.reflect.Executable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class TocketBucketLockFree {
@@ -51,12 +54,10 @@ public class TocketBucketLockFree {
     }
 
     public boolean tryAcquire(int numberTokens) {
-        boolean result;
         long timeAndTokens;
         long lastRefillTimestamp;
         int toketCount;
         do {
-            result = false;
             timeAndTokens = state.get();
             lastRefillTimestamp = sharedTime(timeAndTokens);
             toketCount = toketCount(timeAndTokens);
@@ -76,13 +77,12 @@ public class TocketBucketLockFree {
             }
             if (numberTokens <= toketCount) {
                 toketCount -= numberTokens;
-                result = true;
             } else {
                 return false;
             }
         } while (!updateState(timeAndTokens, ((lastRefillTimestamp << SHARED_SHIFT) | toketCount)));
 
-        return result;
+        return true;
     }
 
     private final boolean updateState(long oldState, long newState) {
@@ -92,27 +92,58 @@ public class TocketBucketLockFree {
 
 
     public static void main(String[] args) throws InterruptedException {
-        TocketBucketLockFree limiter = new TocketBucketLockFree(100000, 20d);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for(int i =0;true;i++){
-                    if(limiter.tryAcquire(1)){
-                        System.out.println(Thread.currentThread()+"---"+i);
+        TocketBucketLockFree limiter = new TocketBucketLockFree(3500, 0.058d);
+        int n = 10;
+        ExecutorService executorService = Executors.newFixedThreadPool(n);
+        for (int j = 0; j < n; j++) {
+            executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; true; ) {
+                        if (limiter.tryAcquire(1)) {
+                            System.out.println(Thread.currentThread() + "---" + i);
+                            i++;
+                        }
                     }
                 }
-            }
-        }).start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for(int i =0;true;i++){
-                    if(limiter.tryAcquire(1)){
-                        System.out.println(Thread.currentThread()+"---"+i);
-                    }
-                }
-            }
-        }).start();
+            });
+        }
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                for(int i =0;true;){
+//                    if(limiter.tryAcquire(1)){
+//                        System.out.println(Thread.currentThread()+"---"+i);
+//                        i++;
+//                    }
+//                }
+//            }
+//        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                for(int i =0;true;){
+//                    if(limiter.tryAcquire(1)){
+//                        System.out.println(Thread.currentThread()+"---"+i);
+//                        i++;
+//
+//                    }
+//                }
+//            }
+//        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                for(int i =0;true;){
+//                    if(limiter.tryAcquire(1)){
+//                        System.out.println(Thread.currentThread()+"---"+i);
+//                        i++;
+//
+//                    }
+//                }
+//            }
+//        }).start();
 
         Thread.sleep(Integer.MAX_VALUE);
     }
