@@ -26,6 +26,14 @@ public class Pair<F, S> {
         this.second = second;
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                "first=" + first +
+                ", second=" + second +
+                '}';
+    }
+
     public static <F, S> Pair<F, S> create(F first, S second) {
         Pair<F, S> pair = new Pair<>();
         pair.setFirst(first);
